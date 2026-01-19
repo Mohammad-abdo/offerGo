@@ -188,7 +188,7 @@ const WithdrawRequests = () => {
               placeholder={t('search', language) + '...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <div className="relative">
@@ -196,7 +196,7 @@ const WithdrawRequests = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
               <option value="0">{t('pending', language)}</option>
@@ -252,7 +252,7 @@ const WithdrawRequests = () => {
               </tr>
             ) : (
               filteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent transition-colors duration-150">
+                <tr key={request.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-semibold text-sm mr-3">
@@ -364,7 +364,7 @@ const WithdrawRequests = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
             >
               {editingRequest ? t('update', language) : t('create', language)}
             </button>
@@ -403,7 +403,7 @@ const WithdrawRequests = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
             >
               {t('update', language)}
             </button>
@@ -424,3 +424,4 @@ const WithdrawRequests = () => {
 }
 
 export default WithdrawRequests
+

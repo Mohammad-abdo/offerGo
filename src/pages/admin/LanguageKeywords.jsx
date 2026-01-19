@@ -149,7 +149,7 @@ const LanguageKeywords = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className="mr-2" size={20} />
           {t('add', language)} {t('keyword', language) || 'Keyword'}
@@ -181,7 +181,7 @@ const LanguageKeywords = () => {
               placeholder={t('search', language) + '...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <div className="relative">
@@ -189,7 +189,7 @@ const LanguageKeywords = () => {
             <select
               value={languageFilter}
               onChange={(e) => setLanguageFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="all">{t('languages', language)}: {t('viewAll', language)}</option>
               {languages.map(lang => (
@@ -236,7 +236,7 @@ const LanguageKeywords = () => {
               </tr>
             ) : (
               filteredKeywords.map((kw) => (
-                <tr key={kw.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent transition-colors duration-150">
+                <tr key={kw.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-semibold text-gray-900">{getLanguageName(kw.languageId)}</div>
                   </td>
@@ -273,7 +273,7 @@ const LanguageKeywords = () => {
               value={formData.languageId}
               onChange={(e) => setFormData({ ...formData, languageId: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white"
             >
               <option value="">{t('select', language) || 'Select Language'}</option>
               {languages.map(lang => (
@@ -290,7 +290,7 @@ const LanguageKeywords = () => {
               onChange={(e) => setFormData({ ...formData, keyword: e.target.value })}
               required
               placeholder="e.g., dashboard, riders, drivers"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all font-mono"
             />
           </div>
 
@@ -301,7 +301,7 @@ const LanguageKeywords = () => {
               onChange={(e) => setFormData({ ...formData, value: e.target.value })}
               required
               rows="4"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
             />
           </div>
 
@@ -315,7 +315,7 @@ const LanguageKeywords = () => {
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {editingKeyword ? t('update', language) : t('create', language)}
             </button>
@@ -336,4 +336,5 @@ const LanguageKeywords = () => {
 }
 
 export default LanguageKeywords
+
 

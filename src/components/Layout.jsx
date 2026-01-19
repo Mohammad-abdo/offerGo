@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { t } from '../utils/translations'
 import { useState } from 'react'
+import Logo from './Logo'
 import {
   FiHome,
   FiUsers,
@@ -27,7 +28,6 @@ import {
   FiMail,
   FiMessageSquare,
   FiGlobe,
-  FiLayers,
   FiCreditCard,
   FiHelpCircle,
   FiXCircle,
@@ -138,7 +138,6 @@ const Layout = () => {
         { name: t('smsTemplates', language), key: 'smsTemplates', href: '/sms-templates', icon: FiMessageSquare },
         { name: t('languages', language), key: 'languages', href: '/languages', icon: FiGlobe },
         { name: t('pages', language), key: 'pages', href: '/pages', icon: FiFileText },
-        { name: t('frontendData', language), key: 'frontendData', href: '/frontend-data', icon: FiLayers },
         { name: t('whyChoose', language) || 'Why Choose Us', key: 'whyChoose', href: '/why-choose', icon: FiStar },
         { name: t('ourMission', language) || 'Our Mission', key: 'ourMission', href: '/our-mission', icon: FiTarget },
         { name: t('clientTestimonials', language) || 'Client Testimonials', key: 'clientTestimonials', href: '/client-testimonials', icon: FiUser },
@@ -164,58 +163,81 @@ const Layout = () => {
     const active = isActive(item.href) || (hasChildren && expanded)
     const hasActiveChild = hasChildren && item.children.some(child => isActive(child.href))
 
+    // Scroll expanded item into view
+    const handleExpand = () => {
+      setExpanded(!expanded)
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        const navElement = document.querySelector('nav.overflow-y-auto')
+        if (navElement && !expanded) {
+          const buttonElement = navElement.querySelector(`button[data-key="${item.key}"]`)
+          if (buttonElement) {
+            buttonElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          }
+        }
+      }, 100)
+    }
+
     if (hasChildren) {
       return (
         <div className="mb-1">
           <button
-            onClick={() => setExpanded(!expanded)}
-            className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group ${
+            data-key={item.key}
+            onClick={handleExpand}
+            className={`w-full flex items-center ${sidebarOpen ? (language === 'ar' ? 'justify-between flex-row-reverse' : 'justify-between') : 'justify-center'} px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group ${
               active || hasActiveChild
-                ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg shadow-blue-500/20`
+                ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg shadow-orange-500/20`
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <item.icon className={`text-lg ${active || hasActiveChild ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors`} />
-              <span className="font-semibold">{item.name}</span>
+            <div className={`flex items-center ${sidebarOpen ? (language === 'ar' ? 'gap-3 flex-row-reverse' : 'gap-3') : 'gap-0'}`}>
+              <item.icon className={`text-lg flex-shrink-0 ${active || hasActiveChild ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors ${language === 'ar' ? 'order-2' : ''}`} />
+              {sidebarOpen && <span className={`font-semibold whitespace-nowrap ${language === 'ar' ? 'text-right order-1' : 'text-left'}`}>{item.name}</span>}
             </div>
-            <FiChevronDown
-              className={`transition-all duration-300 ${expanded ? 'rotate-180' : ''} ${
-                active || hasActiveChild ? 'text-white' : 'text-gray-400'
-              }`}
-            />
+            {sidebarOpen && (
+              <FiChevronDown
+                className={`transition-all duration-300 flex-shrink-0 ${expanded ? 'rotate-180' : ''} ${language === 'ar' ? 'scale-x-[-1]' : ''} ${
+                  active || hasActiveChild ? 'text-white' : 'text-gray-400'
+                }`}
+              />
+            )}
           </button>
-          <div
-            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-              expanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-            }`}
-          >
-            <div className={`mt-2 ${language === 'ar' ? 'mr-2' : 'ml-2'} space-y-1 border-l-2 ${language === 'ar' ? 'border-r-2 border-l-0' : ''} ${colors.border || 'border-blue-200 dark:border-blue-800'} pl-3 ${language === 'ar' ? 'pr-3 pl-0' : ''}`}>
-              {item.children.map((child, index) => {
-                const childActive = isActive(child.href)
-                return (
-                  <Link
-                    key={child.key}
-                    to={child.href}
-                    className={`flex items-center gap-3 px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group ${
-                      childActive
-                        ? `bg-gradient-to-r ${colors.primary} text-white shadow-md font-medium`
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-gray-100'
-                    }`}
-                    style={{
-                      animationDelay: expanded ? `${index * 30}ms` : '0ms'
-                    }}
-                  >
-                    <child.icon className={`text-base ${childActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'} transition-colors`} />
-                    <span>{child.name}</span>
-                    {childActive && (
-                      <div className={`ml-auto w-1.5 h-1.5 rounded-full bg-white`}></div>
-                    )}
-                  </Link>
-                )
-              })}
+          {sidebarOpen && (
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className={`mt-2 ${language === 'ar' ? 'mr-2' : 'ml-2'} space-y-1 ${language === 'ar' ? 'border-r-2' : 'border-l-2'} ${colors.border || 'border-orange-200 dark:border-orange-800'} ${language === 'ar' ? 'pr-3' : 'pl-3'}`}>
+                {item.children.map((child, index) => {
+                  const childActive = isActive(child.href)
+                  return (
+                    <Link
+                      key={child.key}
+                      to={child.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center ${language === 'ar' ? 'flex-row-reverse justify-between' : 'gap-3'} px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group ${
+                        childActive
+                          ? `bg-gradient-to-r ${colors.primary} text-white shadow-md font-medium`
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-gray-100'
+                      }`}
+                      style={{
+                        animationDelay: expanded ? `${index * 30}ms` : '0ms'
+                      }}
+                    >
+                      <div className={`flex items-center ${language === 'ar' ? 'flex-row-reverse gap-3' : 'gap-3'}`}>
+                        <child.icon className={`text-base flex-shrink-0 ${childActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'} transition-colors ${language === 'ar' ? 'order-2' : ''}`} />
+                        <span className={`whitespace-nowrap ${language === 'ar' ? 'text-right order-1' : 'text-left'}`}>{child.name}</span>
+                      </div>
+                      {childActive && (
+                        <div className={`${language === 'ar' ? 'ml-0 mr-2' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white flex-shrink-0`}></div>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )
     }
@@ -223,16 +245,17 @@ const Layout = () => {
     return (
       <Link
         to={item.href}
-        className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group mb-1 ${
+        onClick={() => setMobileMenuOpen(false)}
+        className={`flex items-center ${sidebarOpen ? (language === 'ar' ? 'justify-start flex-row-reverse gap-3' : 'justify-start gap-3') : 'justify-center'} px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group mb-1 ${
           active
-            ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg shadow-blue-500/20`
+            ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg shadow-orange-500/20`
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md'
         }`}
       >
-        <item.icon className={`text-lg ${active ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors`} />
-        <span className="font-semibold">{item.name}</span>
-        {active && (
-          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+        <item.icon className={`text-lg flex-shrink-0 ${active ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors ${language === 'ar' ? 'order-2' : ''}`} />
+        {sidebarOpen && <span className={`font-semibold whitespace-nowrap ${language === 'ar' ? 'text-right order-1' : 'text-left'}`}>{item.name}</span>}
+        {active && sidebarOpen && (
+          <div className={`${language === 'ar' ? 'ml-0 mr-2 order-first' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white animate-pulse flex-shrink-0`}></div>
         )}
       </Link>
     )
@@ -244,27 +267,41 @@ const Layout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`hidden lg:block fixed top-0 ${language === 'ar' ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-700 ${
+        className={`hidden lg:block fixed top-0 ${language === 'ar' ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out ${language === 'ar' ? 'border-l' : 'border-r'} border-gray-200 dark:border-gray-700 ${
           sidebarOpen ? 'w-64' : 'w-20'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className={`flex items-center justify-between h-16 px-4 bg-gradient-to-r ${colors.primary} text-white transition-all duration-300 shadow-md`}>
+          <div className={`relative flex items-center ${sidebarOpen ? (language === 'ar' ? 'justify-between flex-row-reverse' : 'justify-between') : 'justify-center'} h-16 px-4 bg-gradient-to-r ${colors.primary} text-white transition-all duration-300 shadow-md`}>
             {sidebarOpen && (
-              <h1 className="text-xl font-bold animate-fade-in tracking-tight">{t('appName', language)}</h1>
+              <>
+                <Logo showText={true} textColor="white" />
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className={`p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm ${language === 'ar' ? 'order-first' : ''}`}
+                  title={t('collapseSidebar', language)}
+                >
+                  <FiMenu size={20} />
+                </button>
+              </>
             )}
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:block hidden p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm"
-              title={sidebarOpen ? t('collapseSidebar', language) : t('expandSidebar', language)}
-            >
-              <FiMenu size={20} />
-            </button>
+            {!sidebarOpen && (
+              <>
+                <Logo showText={false} className="mx-auto" />
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className={`absolute ${language === 'ar' ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm`}
+                  title={t('expandSidebar', language)}
+                >
+                  <FiMenu size={20} />
+                </button>
+              </>
+            )}
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 overflow-y-auto hide-scrollbar custom-scrollbar">
+          <nav className="flex-1 px-3 py-4 overflow-y-auto overflow-x-hidden hide-scrollbar custom-scrollbar">
             <div className="space-y-1">
               {navigation.map((item) => (
                 <NavItem key={item.key} item={item} />
@@ -277,14 +314,14 @@ const Layout = () => {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`lg:hidden fixed top-0 ${language === 'ar' ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out w-64 border-r border-gray-200 dark:border-gray-700 ${
+        className={`lg:hidden fixed top-0 ${language === 'ar' ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out w-64 ${language === 'ar' ? 'border-l' : 'border-r'} border-gray-200 dark:border-gray-700 ${
           mobileMenuOpen ? 'translate-x-0' : language === 'ar' ? 'translate-x-full' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className={`flex items-center justify-between h-16 px-4 bg-gradient-to-r ${colors.primary} text-white transition-all duration-300 shadow-md`}>
-            <h1 className="text-xl font-bold tracking-tight">{t('appName', language)}</h1>
+            <Logo showText={true} textColor="white" />
             <button
               onClick={() => setMobileMenuOpen(false)}
               className="p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm"
@@ -327,7 +364,7 @@ const Layout = () => {
                     <input
                       type="text"
                       placeholder={t('search', language)}
-                      className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
                 </div>
@@ -417,3 +454,4 @@ const Layout = () => {
 }
 
 export default Layout
+

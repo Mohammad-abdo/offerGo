@@ -316,7 +316,7 @@ const WorkAreas = () => {
           disabled={!mapLoaded || !window.L?.Control?.Draw}
           className={`inline-flex items-center px-4 py-2 rounded-lg transition-colors ${
             mapLoaded && window.L?.Control?.Draw
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-orange-600 text-white hover:bg-orange-700'
               : 'bg-gray-400 text-gray-200 cursor-not-allowed'
           }`}
           title={!mapLoaded || !window.L?.Control?.Draw ? 'Leaflet Draw is loading...' : 'Draw Area'}
@@ -344,7 +344,7 @@ const WorkAreas = () => {
             <div className="flex space-x-2">
               <button
                 onClick={handleSaveArea}
-                className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
               >
                 <FiSave className="mr-2" size={16} />
                 Save
@@ -380,7 +380,7 @@ const WorkAreas = () => {
                 className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
               >
                 <div className="flex items-center space-x-3">
-                  <FiMapPin className="text-blue-600 dark:text-blue-400" size={20} />
+                  <FiMapPin className="text-orange-600 dark:text-orange-400" size={20} />
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-white">{area.name}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -404,4 +404,5 @@ const WorkAreas = () => {
 }
 
 export default WorkAreas
+
 

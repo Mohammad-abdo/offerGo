@@ -77,7 +77,7 @@ const Reports = () => {
     const statusConfig = {
       completed: { color: 'bg-green-100 text-green-800', icon: FiCheckCircle },
       in_progress: { color: 'bg-yellow-100 text-yellow-800', icon: FiClock },
-      pending: { color: 'bg-blue-100 text-blue-800', icon: FiClock },
+      pending: { color: 'bg-orange-100 text-orange-800', icon: FiClock },
       cancelled: { color: 'bg-red-100 text-red-800', icon: FiXCircle },
     }
     const config = statusConfig[status] || statusConfig.pending
@@ -85,7 +85,11 @@ const Reports = () => {
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
         <Icon className="mr-1" size={12} />
-        {status?.replace('_', ' ').toUpperCase() || 'PENDING'}
+        {status === 'completed' ? t('completed', language).toUpperCase() :
+         status === 'in_progress' ? t('inProgress', language).toUpperCase() :
+         status === 'pending' ? t('pending', language).toUpperCase() :
+         status === 'cancelled' ? t('cancelled', language).toUpperCase() :
+         t('pendingStatus', language).toUpperCase()}
       </span>
     )
   }
@@ -96,37 +100,37 @@ const Reports = () => {
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+          <div className="px-6 py-4 bg-gradient-to-r from-orange-50 to-orange-50 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center">
               <FiTruck className="mr-2" />
-              Driver Report
+              {t('driverReport', language)}
             </h2>
-            <p className="text-sm text-gray-600 mt-1">Total Drivers: {data.length}</p>
+            <p className="text-sm text-gray-600 mt-1">{t('totalDrivers', language)}: {data.length}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Driver
+                    {t('driver', language)}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
+                    {t('contact', language)}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t('status', language)}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Online
+                    {t('online', language)}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Rides
+                    {t('totalRides', language)}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Revenue
+                    {t('totalRevenue', language)}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('actions', language)}
                   </th>
                 </tr>
               </thead>
@@ -141,7 +145,7 @@ const Reports = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-semibold">
                               {driver.firstName?.[0] || 'D'}
                             </div>
                           </div>
@@ -163,7 +167,9 @@ const Reports = () => {
                           driver.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-red-100 text-red-800'
                         }`}>
-                          {driver.status?.toUpperCase() || 'UNKNOWN'}
+                          {driver.status === 'active' ? t('active', language).toUpperCase() : 
+                           driver.status === 'pending' ? t('pending', language).toUpperCase() :
+                           t('unknown', language).toUpperCase()}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -172,16 +178,16 @@ const Reports = () => {
                             driver.isOnline ? 'bg-green-500' : 'bg-gray-400'
                           }`}></span>
                           <span className="text-sm text-gray-900">
-                            {driver.isOnline ? 'Online' : 'Offline'}
+                            {driver.isOnline ? t('online', language) : t('offline', language)}
                           </span>
                         </div>
                         {driver.isAvailable && (
-                          <span className="text-xs text-green-600">Available</span>
+                          <span className="text-xs text-green-600">{t('available', language)}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{totalRides}</div>
-                        <div className="text-xs text-gray-500">{completedRides} completed</div>
+                        <div className="text-xs text-gray-500">{completedRides} {t('completed', language)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold text-green-600">
@@ -189,8 +195,8 @@ const Reports = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900">
-                          View Details
+                        <button className="text-orange-600 hover:text-orange-900">
+                          {t('viewDetails', language)}
                         </button>
                       </td>
                     </tr>
@@ -209,20 +215,20 @@ const Reports = () => {
             <div key={`rides-${driver.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="text-md font-semibold text-gray-900">
-                  {driver.firstName} {driver.lastName} - Ride History
+                  {driver.firstName} {driver.lastName} - {t('rideHistory', language)}
                 </h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ride ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">To</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Distance</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('rideId', language)}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('date', language)}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('from', language)}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('to', language)}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('distance', language)}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('amount', language)}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('status', language)}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -266,7 +272,7 @@ const Reports = () => {
 
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-bold mb-4">Report Data</h2>
+        <h2 className="text-xl font-bold mb-4">{t('reportData', language)}</h2>
         <div className="bg-gray-50 p-4 rounded-lg overflow-auto max-h-96">
           <pre className="text-sm">
             {JSON.stringify(data, null, 2)}
@@ -282,7 +288,7 @@ const Reports = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{t('reports', language)}</h1>
-          <p className="text-gray-600 mt-1">View and analyze system reports</p>
+          <p className="text-gray-600 mt-1">{t('viewAndAnalyzeSystemReports', language)}</p>
         </div>
         <div className="relative">
           <button 
@@ -305,7 +311,7 @@ const Reports = () => {
                 window.open(`${apiUrl}${endpoint}?${params.toString()}`, '_blank')
               }
             }}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
           >
             <FiDownload className="mr-2" />
             {t('exportReport', language) || 'Export Report'}
@@ -318,10 +324,10 @@ const Reports = () => {
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8 px-6" aria-label="Tabs">
             {[
-              { id: 'admin-earning', name: 'Admin Earning', icon: FiDollarSign },
-              { id: 'driver-earning', name: 'Driver Earning', icon: FiTrendingUp },
-              { id: 'service-wise', name: 'Service Wise', icon: FiBarChart2 },
-              { id: 'driver-report', name: 'Driver Report', icon: FiUsers },
+              { id: 'admin-earning', name: t('adminEarning', language), icon: FiDollarSign },
+              { id: 'driver-earning', name: t('driverEarning', language), icon: FiTrendingUp },
+              { id: 'service-wise', name: t('serviceWise', language), icon: FiBarChart2 },
+              { id: 'driver-report', name: t('driverReport', language), icon: FiUsers },
             ].map((tab) => {
               const Icon = tab.icon
               return (
@@ -330,7 +336,7 @@ const Reports = () => {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-orange-500 text-orange-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -346,67 +352,67 @@ const Reports = () => {
         <form onSubmit={handleSubmit} className="p-6 border-b border-gray-200">
           <div className="flex items-center mb-4">
             <FiFilter className="mr-2 text-gray-400" />
-            <h3 className="text-sm font-medium text-gray-700">Filters</h3>
+            <h3 className="text-sm font-medium text-gray-700">{t('filters', language)}</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <FiCalendar className="inline mr-1" />
-                From Date
+                {t('fromDate', language)}
               </label>
               <input
                 type="date"
                 name="from_date"
                 value={filters.from_date}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <FiCalendar className="inline mr-1" />
-                To Date
+                {t('toDate', language)}
               </label>
               <input
                 type="date"
                 name="to_date"
                 value={filters.to_date}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rider ID
+                {t('riderId', language)}
               </label>
               <input
                 type="text"
                 name="rider_id"
                 value={filters.rider_id}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Optional"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder={t('optional', language)}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Driver ID
+                {t('driverId', language)}
               </label>
               <input
                 type="text"
                 name="driver_id"
                 value={filters.driver_id}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Optional"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder={t('optional', language)}
               />
             </div>
           </div>
           <button
             type="submit"
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="mt-4 px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
           >
-            Generate Report
+            {t('generateReport', language)}
           </button>
         </form>
       </div>
@@ -415,8 +421,8 @@ const Reports = () => {
       {loading ? (
         <div className="flex items-center justify-center h-64 bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading report data...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">{t('loadingReportData', language)}</p>
           </div>
         </div>
       ) : data ? (
@@ -424,7 +430,7 @@ const Reports = () => {
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
           <FiBarChart2 className="mx-auto text-gray-400 mb-4" size={48} />
-          <p className="text-gray-500">Select a report type and click "Generate Report"</p>
+          <p className="text-gray-500">{t('selectReportTypeAndGenerate', language)}</p>
         </div>
       )}
     </div>
@@ -432,3 +438,4 @@ const Reports = () => {
 }
 
 export default Reports
+

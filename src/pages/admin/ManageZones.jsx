@@ -328,7 +328,7 @@ const ManageZones = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -342,7 +342,7 @@ const ManageZones = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
         >
           <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} />
           {t('addZone', language) || 'Add Zone'}
@@ -371,7 +371,7 @@ const ManageZones = () => {
                   <tr key={zone.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <FiMapPin className="mr-2 text-blue-600" />
+                        <FiMapPin className="mr-2 text-orange-600" />
                         <span className="text-sm font-medium text-gray-900">{zone.name}</span>
                       </div>
                     </td>
@@ -386,7 +386,7 @@ const ManageZones = () => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleOpenModal(zone)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-orange-600 hover:text-orange-900"
                         >
                           <FiEdit />
                         </button>
@@ -427,7 +427,7 @@ const ManageZones = () => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                 dir={language === 'ar' ? 'rtl' : 'ltr'}
               />
             </div>
@@ -439,7 +439,7 @@ const ManageZones = () => {
                 name="status"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                 dir={language === 'ar' ? 'rtl' : 'ltr'}
               >
                 <option value={1}>{t('active', language)}</option>
@@ -479,7 +479,7 @@ const ManageZones = () => {
                     onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
                     required
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-orange-500"
                     dir="ltr"
                   />
                 </div>
@@ -495,7 +495,7 @@ const ManageZones = () => {
                     onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
                     required
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-orange-500"
                     dir="ltr"
                   />
                 </div>
@@ -508,7 +508,7 @@ const ManageZones = () => {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                     dir={language === 'ar' ? 'rtl' : 'ltr'}
                   />
                 </div>
@@ -529,7 +529,7 @@ const ManageZones = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
             >
               {t('save', language)}
             </button>
@@ -541,6 +541,7 @@ const ManageZones = () => {
 }
 
 export default ManageZones
+
 
 
 

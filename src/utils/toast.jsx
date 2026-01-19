@@ -63,10 +63,10 @@ export const showInfo = (message, options = {}) => {
   return toast(message, {
     ...toastOptions,
     ...options,
-    icon: <FiInfo className="text-blue-500" size={20} />,
+    icon: <FiInfo className="text-orange-500" size={20} />,
     style: {
       ...toastStyle,
-      borderLeft: '4px solid #3b82f6',
+      borderLeft: '4px solid #f97316',
     },
   })
 }
@@ -93,7 +93,7 @@ export const showPromise = (promise, messages) => {
 }
 
 // Custom notification
-export const showCustom = (message, icon, color = '#3b82f6', options = {}) => {
+export const showCustom = (message, icon, color = '#f97316', options = {}) => {
   return toast(message, {
     ...toastOptions,
     ...options,
@@ -114,5 +114,6 @@ export default {
   promise: showPromise,
   custom: showCustom,
 }
+
 
 

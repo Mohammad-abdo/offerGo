@@ -181,10 +181,10 @@ const BulkActions = ({
 
   return (
     <>
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-blue-900">
+            <span className="text-sm font-medium text-orange-900">
               {selectedItems.length > 0 && `${selectedItems.length} ${t('selected', language) || 'selected'}`}
             </span>
           </div>
@@ -286,4 +286,5 @@ const BulkActions = ({
 }
 
 export default BulkActions
+
 

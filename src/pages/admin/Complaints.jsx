@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import api from '../../utils/api'
 import Modal from '../../components/Modal'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { t } from '../../utils/translations'
 
 const Complaints = () => {
+  const { language } = useLanguage()
   const [complaints, setComplaints] = useState([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -57,7 +60,7 @@ const Complaints = () => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800',
       resolved: 'bg-green-100 text-green-800',
-      in_progress: 'bg-blue-100 text-blue-800',
+      in_progress: 'bg-orange-100 text-orange-800',
       rejected: 'bg-red-100 text-red-800',
     }
     return colors[status] || 'bg-gray-100 text-gray-800'
@@ -66,7 +69,7 @@ const Complaints = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     )
   }
@@ -124,7 +127,7 @@ const Complaints = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                     <button
                       onClick={() => handleViewDetails(complaint)}
-                      className="text-blue-600 hover:text-blue-900"
+                      className="text-orange-600 hover:text-orange-900"
                     >
                       View
                     </button>
@@ -162,11 +165,11 @@ const Complaints = () => {
         {selectedComplaint && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Subject</label>
+              <label className="block text-sm font-medium text-gray-700">{t('subject', language)}</label>
               <p className="mt-1 text-sm text-gray-900">{selectedComplaint.subject}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-gray-700">{t('description', language)}</label>
               <p className="mt-1 text-sm text-gray-900">{selectedComplaint.description}</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -203,4 +206,5 @@ const Complaints = () => {
 }
 
 export default Complaints
+
 

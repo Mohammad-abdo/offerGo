@@ -148,7 +148,7 @@ const Services = () => {
         <h1 className="text-3xl font-bold text-gray-900">{t('services', language)}</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
         >
           + {t('addService', language)}
         </button>
@@ -172,7 +172,7 @@ const Services = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleOpenModal(service)}
-                    className="text-blue-600 hover:text-blue-900 text-sm"
+                    className="text-orange-600 hover:text-orange-900 text-sm"
                   >
                     {t('edit', language)}
                   </button>
@@ -338,7 +338,7 @@ const Services = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
             >
               {editingService ? t('update', language) : t('create', language)}
             </button>
@@ -350,4 +350,5 @@ const Services = () => {
 }
 
 export default Services
+
 

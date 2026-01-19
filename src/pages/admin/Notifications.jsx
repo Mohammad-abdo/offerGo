@@ -65,7 +65,7 @@ const Notifications = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -79,7 +79,7 @@ const Notifications = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
         >
           <FiSend className="mr-2" />
           Send Notification
@@ -150,7 +150,7 @@ const Notifications = () => {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
           </div>
           <div>
@@ -161,7 +161,7 @@ const Notifications = () => {
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               required
               rows="4"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
           </div>
           <div>
@@ -170,7 +170,7 @@ const Notifications = () => {
               name="userType"
               value={formData.userType}
               onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             >
               <option value="all">All Users</option>
               <option value="rider">Riders Only</option>
@@ -187,7 +187,7 @@ const Notifications = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
             >
               Send Notification
             </button>
@@ -199,4 +199,5 @@ const Notifications = () => {
 }
 
 export default Notifications
+
 

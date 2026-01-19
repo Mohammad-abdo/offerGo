@@ -25,7 +25,7 @@ const Settings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     )
   }
@@ -44,7 +44,7 @@ const Settings = () => {
               </label>
               <input
                 type="text"
-                value={settings.appName || 'Tovo'}
+                value={settings.appName || 'offerGo'}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 readOnly
               />
@@ -81,4 +81,5 @@ const Settings = () => {
 }
 
 export default Settings
+
 

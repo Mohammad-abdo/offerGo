@@ -120,7 +120,7 @@ const SubAdmin = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -134,7 +134,7 @@ const SubAdmin = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
         >
           <FiPlus className="mr-2" />
           Add Sub Admin
@@ -150,7 +150,7 @@ const SubAdmin = () => {
             placeholder={t('search', language)}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -194,7 +194,7 @@ const SubAdmin = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-semibold">
                             {subAdmin.firstName?.[0] || 'S'}
                           </div>
                         </div>
@@ -229,7 +229,7 @@ const SubAdmin = () => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleOpenModal(subAdmin)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-orange-600 hover:text-orange-900"
                         >
                           <FiEdit />
                         </button>
@@ -267,7 +267,7 @@ const SubAdmin = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -280,7 +280,7 @@ const SubAdmin = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -294,7 +294,7 @@ const SubAdmin = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <div>
@@ -307,7 +307,7 @@ const SubAdmin = () => {
               value={formData.password}
               onChange={handleChange}
               required={!editingSubAdmin}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -320,7 +320,7 @@ const SubAdmin = () => {
                 name="countryCode"
                 value={formData.countryCode}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -332,7 +332,7 @@ const SubAdmin = () => {
                 name="contactNumber"
                 value={formData.contactNumber}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -344,7 +344,7 @@ const SubAdmin = () => {
               name="userType"
               value={formData.userType}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
               <option value="sub_admin">Sub Admin</option>
               <option value="manager">Manager</option>
@@ -361,7 +361,7 @@ const SubAdmin = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
             >
               {t('save', language)}
             </button>
@@ -373,6 +373,7 @@ const SubAdmin = () => {
 }
 
 export default SubAdmin
+
 
 
 

@@ -127,7 +127,7 @@ const FAQs = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className="mr-2" size={20} />
           {t('addFAQ', language)}
@@ -144,7 +144,7 @@ const FAQs = () => {
               placeholder={t('search', language) + '...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <div className="relative">
@@ -152,7 +152,7 @@ const FAQs = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white"
             >
               <option value="all">{t('type', language)}: {t('viewAll', language)}</option>
               <option value="rider">{t('rider', language)}</option>
@@ -201,7 +201,7 @@ const FAQs = () => {
               </tr>
             ) : (
               filteredFaqs.map((faq) => (
-                <tr key={faq.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent transition-colors duration-150">
+                <tr key={faq.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4">
                     <div className="text-sm font-semibold text-gray-900">{faq.question || '-'}</div>
                   </td>
@@ -209,7 +209,7 @@ const FAQs = () => {
                     <div className="text-sm text-gray-600 max-w-md truncate">{faq.answer || '-'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                    <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                       {faq.type === 'rider' ? t('rider', language) : t('driver', language)}
                     </span>
                   </td>
@@ -300,7 +300,7 @@ const FAQs = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
             >
               {editingFaq ? t('update', language) : t('create', language)}
             </button>
@@ -321,3 +321,4 @@ const FAQs = () => {
 }
 
 export default FAQs
+

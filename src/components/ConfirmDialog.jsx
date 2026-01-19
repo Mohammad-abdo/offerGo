@@ -30,10 +30,10 @@ const ConfirmDialog = ({
       border: 'border-yellow-200',
     },
     info: {
-      icon: <FiAlertTriangle className="text-blue-500" size={24} />,
-      iconBg: 'bg-blue-100',
-      button: 'bg-blue-600 hover:bg-blue-700 text-white',
-      border: 'border-blue-200',
+      icon: <FiAlertTriangle className="text-orange-500" size={24} />,
+      iconBg: 'bg-orange-100',
+      button: 'bg-orange-600 hover:bg-orange-700 text-white',
+      border: 'border-orange-200',
     },
   }
 
@@ -102,5 +102,6 @@ const ConfirmDialog = ({
 }
 
 export default ConfirmDialog
+
 
 

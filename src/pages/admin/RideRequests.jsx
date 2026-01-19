@@ -63,7 +63,7 @@ const RideRequests = () => {
   const getStatusColor = (status) => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800',
-      accepted: 'bg-blue-100 text-blue-800',
+      accepted: 'bg-orange-100 text-orange-800',
       in_progress: 'bg-purple-100 text-purple-800',
       completed: 'bg-green-100 text-green-800',
       cancelled: 'bg-red-100 text-red-800'
@@ -142,7 +142,7 @@ const RideRequests = () => {
                   type="checkbox"
                   checked={selectedRides.length === filteredRides.length && filteredRides.length > 0}
                   onChange={handleSelectAll}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                 />
               </TableHeader>
               <TableHeader>{t('rider', language)}</TableHeader>
@@ -172,13 +172,13 @@ const RideRequests = () => {
               </tr>
             ) : (
               filteredRides.map((ride) => (
-                <tr key={ride.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent transition-colors duration-150">
+                <tr key={ride.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
                       type="checkbox"
                       checked={selectedRides.includes(ride.id)}
                       onChange={() => handleSelectRide(ride.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -260,4 +260,5 @@ const RideRequests = () => {
 }
 
 export default RideRequests
+
 

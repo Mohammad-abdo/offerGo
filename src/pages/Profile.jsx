@@ -99,7 +99,7 @@ const Profile = () => {
   }
 
   const colorOptions = [
-    { name: 'Blue', value: 'blue', color: 'bg-blue-500' },
+    { name: 'Blue', value: 'blue', color: 'bg-orange-500' },
     { name: 'Indigo', value: 'indigo', color: 'bg-indigo-500' },
     { name: 'Purple', value: 'purple', color: 'bg-purple-500' },
     { name: 'Green', value: 'green', color: 'bg-green-500' },
@@ -147,7 +147,7 @@ const Profile = () => {
                       value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       required
-                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
                   <div>
@@ -159,7 +159,7 @@ const Profile = () => {
                       value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       required
-                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
                 </div>
@@ -173,7 +173,7 @@ const Profile = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
 
@@ -185,7 +185,7 @@ const Profile = () => {
                     type="tel"
                     value={formData.contactNumber}
                     onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
 
@@ -196,7 +196,7 @@ const Profile = () => {
                   <textarea
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows="3"
                   />
                 </div>
@@ -223,7 +223,7 @@ const Profile = () => {
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white text-2xl font-bold">
                     {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
                   </div>
                   <div>
@@ -236,7 +236,7 @@ const Profile = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <FiMail className="text-blue-600 dark:text-blue-400" size={20} />
+                    <FiMail className="text-orange-600 dark:text-orange-400" size={20} />
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{t('email', language)}</p>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.email || '-'}</p>
@@ -244,7 +244,7 @@ const Profile = () => {
                   </div>
 
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <FiPhone className="text-blue-600 dark:text-blue-400" size={20} />
+                    <FiPhone className="text-orange-600 dark:text-orange-400" size={20} />
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{t('contactNumber', language)}</p>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.contactNumber || '-'}</p>
@@ -252,7 +252,7 @@ const Profile = () => {
                   </div>
 
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <FiMapPin className="text-blue-600 dark:text-blue-400" size={20} />
+                    <FiMapPin className="text-orange-600 dark:text-orange-400" size={20} />
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{t('address', language)}</p>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.address || '-'}</p>
@@ -260,7 +260,7 @@ const Profile = () => {
                   </div>
 
                   <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <FiCalendar className="text-blue-600 dark:text-blue-400" size={20} />
+                    <FiCalendar className="text-orange-600 dark:text-orange-400" size={20} />
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Joined</p>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -299,14 +299,14 @@ const Profile = () => {
                   {theme === 'light' ? (
                     <FiSun className="text-yellow-500" size={20} />
                   ) : (
-                    <FiMoon className="text-blue-400" size={20} />
+                    <FiMoon className="text-orange-400" size={20} />
                   )}
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme</span>
                 </div>
                 <button
                   onClick={toggleTheme}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    theme === 'dark' ? 'bg-blue-600' : 'bg-gray-300'
+                    theme === 'dark' ? 'bg-orange-600' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -370,7 +370,7 @@ const Profile = () => {
             {/* Language */}
             <div>
               <div className="flex items-center space-x-2 mb-3">
-                <FiGlobe className="text-blue-500" size={20} />
+                <FiGlobe className="text-orange-500" size={20} />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Language</span>
               </div>
               <button
@@ -448,7 +448,7 @@ const Profile = () => {
                       value={passwordData.oldPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
                       required
-                      className="w-full px-4 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                     <button
                       type="button"
@@ -470,7 +470,7 @@ const Profile = () => {
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                       required
-                      className="w-full px-4 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                     <button
                       type="button"
@@ -492,7 +492,7 @@ const Profile = () => {
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                       required
-                      className="w-full px-4 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                     <button
                       type="button"
@@ -529,4 +529,5 @@ const Profile = () => {
 }
 
 export default Profile
+
 

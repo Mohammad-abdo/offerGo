@@ -133,7 +133,7 @@ const Airports = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={20} />
           {t('addAirport', language)}
@@ -196,10 +196,10 @@ const Airports = () => {
               </tr>
             ) : (
               filteredAirports.map((airport) => (
-                <tr key={airport.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-transparent transition-colors duration-150">
+                <tr key={airport.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <FiMapPin className="mr-2 text-blue-600" size={18} />
+                      <FiMapPin className="mr-2 text-orange-600" size={18} />
                       <div className="text-sm font-semibold text-gray-900">{airport.name || '-'}</div>
                     </div>
                   </td>
@@ -286,7 +286,7 @@ const Airports = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
             >
               {editingAirport ? t('update', language) : t('create', language)}
             </button>
@@ -307,3 +307,4 @@ const Airports = () => {
 }
 
 export default Airports
+

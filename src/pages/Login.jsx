@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import Logo from '../components/Logo'
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -44,7 +45,9 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 px-4 py-8 sm:py-12">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 sm:p-8">
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Tovo</h1>
+          <div className="flex justify-center mb-4">
+            <Logo showText={true} />
+          </div>
           <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm sm:text-base">Sign in to your account</p>
         </div>
 
@@ -110,4 +113,5 @@ const Login = () => {
 }
 
 export default Login
+
 

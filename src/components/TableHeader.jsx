@@ -11,3 +11,4 @@ const TableHeader = ({ children, className = '', language = 'en' }) => {
 
 export default TableHeader
 
+

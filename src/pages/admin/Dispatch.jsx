@@ -25,7 +25,7 @@ const Dispatch = () => {
   const getStatusColor = (status) => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800',
-      accepted: 'bg-blue-100 text-blue-800',
+      accepted: 'bg-orange-100 text-orange-800',
       in_progress: 'bg-purple-100 text-purple-800',
       completed: 'bg-green-100 text-green-800',
       cancelled: 'bg-red-100 text-red-800',
@@ -36,7 +36,7 @@ const Dispatch = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     )
   }
@@ -120,7 +120,7 @@ const Dispatch = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {!ride.driver && (
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button className="text-orange-600 hover:text-orange-900">
                         Assign Driver
                       </button>
                     )}
@@ -136,4 +136,5 @@ const Dispatch = () => {
 }
 
 export default Dispatch
+
 

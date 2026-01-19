@@ -183,7 +183,7 @@ const DemandMap = () => {
                   loadDemandData(mapRef.current._mapInstance)
                 }
               }}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
             />
             <span className="text-sm text-gray-700 dark:text-gray-300">Show Drivers</span>
           </label>
@@ -193,7 +193,7 @@ const DemandMap = () => {
                 loadDemandData(mapRef.current._mapInstance)
               }
             }}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
           >
             <FiRefreshCw className="mr-2" size={18} />
             Refresh
@@ -307,4 +307,5 @@ const DemandMap = () => {
 }
 
 export default DemandMap
+
 

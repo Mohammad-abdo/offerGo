@@ -51,7 +51,7 @@ const RideRequestDetails = () => {
   const getStatusColor = (status) => {
     const statusColors = {
       pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-      accepted: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      accepted: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
       in_progress: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
       completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
       cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
@@ -70,7 +70,7 @@ const RideRequestDetails = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -127,7 +127,7 @@ const RideRequestDetails = () => {
           {/* Ride Information */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-              <FiNavigation className="mr-2 text-blue-600" size={20} />
+              <FiNavigation className="mr-2 text-orange-600" size={20} />
               {t('ride', language)} {t('information', language) || 'Information'}
             </h2>
             <div className="space-y-4">
@@ -224,7 +224,7 @@ const RideRequestDetails = () => {
           {/* Rider Information */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-              <FiUser className="mr-2 text-blue-600" size={20} />
+              <FiUser className="mr-2 text-orange-600" size={20} />
               {t('rider', language)} {t('information', language) || 'Information'}
             </h2>
             {rideRequest.rider ? (
@@ -305,4 +305,5 @@ const RideRequestDetails = () => {
 }
 
 export default RideRequestDetails
+
 

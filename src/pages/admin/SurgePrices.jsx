@@ -176,7 +176,7 @@ const SurgePrices = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className="mr-2" size={20} />
           Add Surge Price
@@ -192,7 +192,7 @@ const SurgePrices = () => {
             placeholder={t('search', language) + '...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         </div>
       </div>
@@ -236,10 +236,10 @@ const SurgePrices = () => {
               </tr>
             ) : (
               filteredPrices.map((price) => (
-                <tr key={price.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 dark:hover:from-blue-900/10 hover:to-transparent transition-colors duration-150">
+                <tr key={price.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <FiMapPin className="mr-2 text-blue-600 dark:text-blue-400" size={18} />
+                      <FiMapPin className="mr-2 text-orange-600 dark:text-orange-400" size={18} />
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {price.region?.name || 'All Regions'}
                       </div>
@@ -262,7 +262,7 @@ const SurgePrices = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-xs text-gray-600 dark:text-gray-400">
-                      {price.day && price.day.length > 0 ? price.day.join(', ') : 'All days'}
+                      {price.day && price.day.length > 0 ? price.day.join(', ') : t('allDays', language)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -292,7 +292,7 @@ const SurgePrices = () => {
               <select
                 value={formData.region_id}
                 onChange={(e) => setFormData({ ...formData, region_id: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">All Regions</option>
                 {regions.map((region) => (
@@ -307,7 +307,7 @@ const SurgePrices = () => {
               <select
                 value={formData.service_id}
                 onChange={(e) => setFormData({ ...formData, service_id: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">All Services</option>
                 {services.map((service) => (
@@ -325,7 +325,7 @@ const SurgePrices = () => {
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="percentage">Percentage</option>
                 <option value="fixed">Fixed Amount</option>
@@ -339,7 +339,7 @@ const SurgePrices = () => {
                 value={formData.value}
                 onChange={(e) => setFormData({ ...formData, value: e.target.value })}
                 required
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
@@ -354,7 +354,7 @@ const SurgePrices = () => {
                   onClick={() => handleDayToggle(day)}
                   className={`px-3 py-2 text-sm rounded-lg border transition-all ${
                     formData.day.includes(day)
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'bg-orange-600 text-white border-orange-600'
                       : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -377,7 +377,7 @@ const SurgePrices = () => {
                     ...formData,
                     from_time: { ...formData.from_time, hour: parseInt(e.target.value) }
                   })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Hour"
                 />
                 <input
@@ -389,7 +389,7 @@ const SurgePrices = () => {
                     ...formData,
                     from_time: { ...formData.from_time, minute: parseInt(e.target.value) }
                   })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Minute"
                 />
               </div>
@@ -406,7 +406,7 @@ const SurgePrices = () => {
                     ...formData,
                     to_time: { ...formData.to_time, hour: parseInt(e.target.value) }
                   })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Hour"
                 />
                 <input
@@ -418,7 +418,7 @@ const SurgePrices = () => {
                     ...formData,
                     to_time: { ...formData.to_time, minute: parseInt(e.target.value) }
                   })}
-                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Minute"
                 />
               </div>
@@ -435,7 +435,7 @@ const SurgePrices = () => {
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {editingPrice ? t('update', language) : t('create', language)}
             </button>
@@ -456,3 +456,4 @@ const SurgePrices = () => {
 }
 
 export default SurgePrices
+

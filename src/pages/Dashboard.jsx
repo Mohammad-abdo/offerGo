@@ -136,9 +136,9 @@ const Dashboard = () => {
       title: t('total_riders', language),
       value: stats.totalRiders || 0,
       icon: FiUsers,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-600',
+      color: 'from-orange-500 to-orange-600',
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-600',
       change: '+12%',
       trend: 'up'
     },
@@ -203,7 +203,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -263,7 +263,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{t('revenue_overview', language)}</h2>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
               <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">{t('revenue', language)}</span>
             </div>
           </div>
@@ -338,7 +338,7 @@ const Dashboard = () => {
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{t('recent_rides', language)}</h2>
             <a
               href="/ride-requests"
-              className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center"
+              className="text-xs sm:text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium flex items-center"
             >
               <span className="hidden sm:inline">{t('view_all', language)}</span>
               <span className="sm:hidden">{t('view_all', language).substring(0, 3)}</span>
@@ -397,19 +397,19 @@ const Dashboard = () => {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <FiCalendar className="text-blue-600 dark:text-blue-400" size={20} />
+            <FiCalendar className="text-orange-600 dark:text-orange-400" size={20} />
             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
               {t('scheduled_rides', language) || 'الرحلات المجدولة'}
             </h2>
             {scheduledRides.length > 0 && (
-              <span className="px-2 py-1 text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full">
+              <span className="px-2 py-1 text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded-full">
                 {scheduledRides.length}
               </span>
             )}
           </div>
           <a
             href="/ride-requests?isSchedule=true"
-            className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center"
+            className="text-xs sm:text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium flex items-center"
           >
             <span className="hidden sm:inline">{t('view_all', language)}</span>
             <span className="sm:hidden">{t('view_all', language)?.substring(0, 3) || 'All'}</span>
@@ -428,11 +428,11 @@ const Dashboard = () => {
               return (
                 <div
                   key={ride.id}
-                  className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50 dark:from-blue-900/20 to-white dark:to-gray-800 rounded-lg border border-blue-100 dark:border-blue-800 hover:shadow-md transition-all duration-200"
+                  className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-orange-50 dark:from-orange-900/20 to-white dark:to-gray-800 rounded-lg border border-orange-100 dark:border-orange-800 hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0 bg-blue-100 dark:bg-blue-900/30">
-                      <FiCalendar className="text-blue-600 dark:text-blue-400" size={18} className="sm:w-5 sm:h-5" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0 bg-orange-100 dark:bg-orange-900/30">
+                      <FiCalendar className="text-orange-600 dark:text-orange-400" size={18} className="sm:w-5 sm:h-5" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center space-x-2 mb-1">
@@ -441,7 +441,7 @@ const Dashboard = () => {
                         </p>
                         <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
                           ride.status === 'scheduled' 
-                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' 
+                            ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' 
                             : ride.status === 'active'
                             ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
@@ -474,7 +474,7 @@ const Dashboard = () => {
                         )}
                       </div>
                       {timeUntilRide > 0 && (
-                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                        <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                           {hoursUntil > 0 
                             ? `${hoursUntil} ${t('hours', language) || 'ساعة'} ${minutesUntil > 0 ? `${minutesUntil} ${t('minutes', language) || 'دقيقة'}` : ''}`
                             : `${minutesUntil} ${t('minutes', language) || 'دقيقة'}`
@@ -507,10 +507,10 @@ const Dashboard = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-blue-100 text-xs sm:text-sm font-medium truncate">{t('active_drivers', language)}</p>
+              <p className="text-orange-100 text-xs sm:text-sm font-medium truncate">{t('active_drivers', language)}</p>
               <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{stats.activeDrivers || 0}</p>
             </div>
             <FiActivity size={24} className="sm:w-8 sm:h-8 opacity-80 flex-shrink-0 ml-2" />
@@ -549,3 +549,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+

@@ -92,7 +92,7 @@ const Documents = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     )
   }
@@ -103,7 +103,7 @@ const Documents = () => {
         <h1 className="text-3xl font-bold text-gray-900">Documents</h1>
         <button
           onClick={() => handleOpenModal()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
         >
           + Add Document
         </button>
@@ -161,7 +161,7 @@ const Documents = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                     <button
                       onClick={() => handleOpenModal(doc)}
-                      className="text-blue-600 hover:text-blue-900"
+                      className="text-orange-600 hover:text-orange-900"
                     >
                       Edit
                     </button>
@@ -255,7 +255,7 @@ const Documents = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
             >
               {editingDocument ? 'Update' : 'Create'}
             </button>
@@ -267,4 +267,5 @@ const Documents = () => {
 }
 
 export default Documents
+
 

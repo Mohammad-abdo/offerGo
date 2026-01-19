@@ -184,7 +184,7 @@ const CustomerSupport = () => {
         </div>
         <button
           onClick={handleOpenModal}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className="mr-2" size={20} />
           New Support Ticket
@@ -201,14 +201,14 @@ const CustomerSupport = () => {
               placeholder={t('search', language) + '...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div className="relative">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
               <option value="pending">Pending</option>
@@ -255,7 +255,7 @@ const CustomerSupport = () => {
               </tr>
             ) : (
               filteredSupports.map((support) => (
-                <tr key={support.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 dark:hover:from-blue-900/10 hover:to-transparent transition-colors duration-150">
+                <tr key={support.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
                       {support.user?.firstName} {support.user?.lastName}
@@ -282,7 +282,7 @@ const CustomerSupport = () => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleOpenChat(support)}
-                        className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors duration-200"
+                        className="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors duration-200"
                         title="Open Chat"
                       >
                         <FiMessageSquare size={18} />
@@ -313,7 +313,7 @@ const CustomerSupport = () => {
               value={formData.supportType}
               onChange={(e) => setFormData({ ...formData, supportType: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Type</option>
               <option value="technical">Technical</option>
@@ -330,7 +330,7 @@ const CustomerSupport = () => {
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               required
               rows="5"
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
@@ -344,7 +344,7 @@ const CustomerSupport = () => {
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {t('create', language)}
             </button>
@@ -396,12 +396,12 @@ const CustomerSupport = () => {
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         msg.senderType === 'admin'
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-orange-600 text-white'
                           : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
                       }`}
                     >
                       <p className="text-sm">{msg.message}</p>
-                      <p className={`text-xs mt-1 ${msg.senderType === 'admin' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <p className={`text-xs mt-1 ${msg.senderType === 'admin' ? 'text-orange-100' : 'text-gray-500 dark:text-gray-400'}`}>
                         {new Date(msg.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -417,11 +417,11 @@ const CustomerSupport = () => {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
               <button
                 type="submit"
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
               >
                 <FiSend size={20} />
               </button>
@@ -443,5 +443,6 @@ const CustomerSupport = () => {
 }
 
 export default CustomerSupport
+
 
 

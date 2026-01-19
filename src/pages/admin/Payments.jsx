@@ -43,7 +43,7 @@ const Payments = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -80,7 +80,7 @@ const Payments = () => {
               <p className="text-sm font-medium text-gray-600">Total Payments</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">{filteredPayments.length}</p>
             </div>
-            <FiDollarSign className="text-3xl text-blue-600" />
+            <FiDollarSign className="text-3xl text-orange-600" />
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -130,7 +130,7 @@ const Payments = () => {
                 onClick={() => setPaymentType(type)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   paymentType === type
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-orange-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -146,7 +146,7 @@ const Payments = () => {
                 placeholder={t('search', language)}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -191,7 +191,7 @@ const Payments = () => {
                       ${parseFloat(payment.amount || 0).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
                         {payment.paymentType || 'N/A'}
                       </span>
                     </td>
@@ -217,6 +217,7 @@ const Payments = () => {
 }
 
 export default Payments
+
 
 
 

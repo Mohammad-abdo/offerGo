@@ -131,7 +131,7 @@ const DriverDocuments = () => {
     try {
       await api.post(`/driver-documents/driver-document-update/${id}`, { isVerified: !isVerified })
       fetchDriverDocuments()
-      showSuccess(isVerified ? 'Document unverified' : 'Document verified')
+      showSuccess(isVerified ? t('documentUnverified', language) : t('documentVerified', language))
     } catch (error) {
       showError(error.response?.data?.message || t('failed', language))
     }
@@ -165,7 +165,7 @@ const DriverDocuments = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className="mr-2" size={20} />
           Add Document
@@ -182,14 +182,14 @@ const DriverDocuments = () => {
               placeholder={t('search', language) + '...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div className="relative">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
               <option value="verified">Verified</option>
@@ -235,7 +235,7 @@ const DriverDocuments = () => {
               </tr>
             ) : (
               filteredDocuments.map((doc) => (
-                <tr key={doc.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 dark:hover:from-blue-900/10 hover:to-transparent transition-colors duration-150">
+                <tr key={doc.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-semibold text-sm mr-3">
@@ -251,7 +251,7 @@ const DriverDocuments = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <FiFileText className="mr-2 text-blue-600 dark:text-blue-400" size={18} />
+                      <FiFileText className="mr-2 text-orange-600 dark:text-orange-400" size={18} />
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {doc.document?.name || '-'}
                       </div>
@@ -260,7 +260,7 @@ const DriverDocuments = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <FiClock className="mr-2" size={16} />
-                      {doc.expireDate ? new Date(doc.expireDate).toLocaleDateString() : 'No expiry'}
+                      {doc.expireDate ? new Date(doc.expireDate).toLocaleDateString() : t('noExpiry', language)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -312,7 +312,7 @@ const DriverDocuments = () => {
               value={formData.driverId}
               onChange={(e) => setFormData({ ...formData, driverId: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Driver</option>
               {drivers.map((driver) => (
@@ -329,7 +329,7 @@ const DriverDocuments = () => {
               value={formData.documentId}
               onChange={(e) => setFormData({ ...formData, documentId: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Document Type</option>
               {documentTypes.map((type) => (
@@ -346,7 +346,7 @@ const DriverDocuments = () => {
               type="date"
               value={formData.expireDate}
               onChange={(e) => setFormData({ ...formData, expireDate: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
@@ -357,7 +357,7 @@ const DriverDocuments = () => {
                   type="checkbox"
                   checked={formData.isVerified}
                   onChange={(e) => setFormData({ ...formData, isVerified: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Verified</span>
               </label>
@@ -374,7 +374,7 @@ const DriverDocuments = () => {
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {editingDocument ? t('update', language) : t('create', language)}
             </button>
@@ -395,3 +395,4 @@ const DriverDocuments = () => {
 }
 
 export default DriverDocuments
+

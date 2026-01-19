@@ -18,3 +18,4 @@ const ResponsiveTable = ({ children, className = '' }) => {
 
 export default ResponsiveTable
 
+

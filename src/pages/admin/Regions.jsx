@@ -96,7 +96,7 @@ const Regions = () => {
       handleCloseModal()
     } catch (error) {
       console.error('Error saving region:', error)
-      showError(error.response?.data?.message || t('failed', language) || 'Operation failed')
+      showError(error.response?.data?.message || t('failed', language) || t('operationFailed', language))
     }
   }
 
@@ -120,7 +120,7 @@ const Regions = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -130,11 +130,11 @@ const Regions = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('regions', language)}</h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">{t('manage_regions', language) || 'Manage and monitor all regions'}</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">{t('manage_regions', language)}</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
         >
           <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={18} />
           <span className="hidden sm:inline">{t('add', language)} {t('regions', language)}</span>
@@ -168,7 +168,7 @@ const Regions = () => {
                 <tr key={region.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
                     <div className="flex items-center min-w-0">
-                      <FiMapPin className="mr-2 text-blue-600 dark:text-blue-400 flex-shrink-0" size={18} />
+                      <FiMapPin className="mr-2 text-orange-600 dark:text-orange-400 flex-shrink-0" size={18} />
                       <div className="min-w-0 flex-1">
                         <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white block truncate">
                           {language === 'ar' && region.nameAr ? region.nameAr : region.name}
@@ -198,7 +198,7 @@ const Regions = () => {
                     <div className="flex items-center space-x-2">
                       <button 
                         onClick={() => handleOpenModal(region)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        className="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300 p-1.5 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
                         title={t('edit', language)}
                       >
                         <FiEdit size={18} />
@@ -236,7 +236,7 @@ const Regions = () => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder={t('enterRegionName', language) || 'Enter region name'}
             />
           </div>
@@ -249,7 +249,7 @@ const Regions = () => {
               type="text"
               value={formData.nameAr}
               onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
-              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder={t('enterRegionNameAr', language) || 'Enter region name in Arabic'}
               dir="rtl"
             />
@@ -263,7 +263,7 @@ const Regions = () => {
               <select
                 value={formData.distanceUnit}
                 onChange={(e) => setFormData({ ...formData, distanceUnit: e.target.value })}
-                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="km">km</option>
                 <option value="mi">mi</option>
@@ -278,7 +278,7 @@ const Regions = () => {
                 type="text"
                 value={formData.timezone}
                 onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="UTC"
               />
             </div>
@@ -291,7 +291,7 @@ const Regions = () => {
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: parseInt(e.target.value) })}
-              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value={1}>{t('active', language)}</option>
               <option value={0}>{t('inactive', language)}</option>
@@ -308,7 +308,7 @@ const Regions = () => {
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {editingRegion ? t('update', language) : t('create', language)}
             </button>
@@ -329,4 +329,5 @@ const Regions = () => {
 }
 
 export default Regions
+
 

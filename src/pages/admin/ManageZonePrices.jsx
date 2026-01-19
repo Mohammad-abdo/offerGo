@@ -109,7 +109,7 @@ const ManageZonePrices = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -123,7 +123,7 @@ const ManageZonePrices = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
         >
           <FiPlus className="mr-2" />
           Add Zone Price
@@ -171,7 +171,7 @@ const ManageZonePrices = () => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleOpenModal(price)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-orange-600 hover:text-orange-900"
                         >
                           <FiEdit />
                         </button>
@@ -201,7 +201,7 @@ const ManageZonePrices = () => {
               value={formData.zoneId}
               onChange={(e) => setFormData({ ...formData, zoneId: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             >
               <option value="">Select Zone</option>
               {zones.map((zone) => (
@@ -218,7 +218,7 @@ const ManageZonePrices = () => {
               value={formData.serviceId}
               onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             >
               <option value="">Select Service</option>
               {services.map((service) => (
@@ -237,7 +237,7 @@ const ManageZonePrices = () => {
                 name="baseFare"
                 value={formData.baseFare}
                 onChange={(e) => setFormData({ ...formData, baseFare: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
               />
             </div>
             <div>
@@ -248,7 +248,7 @@ const ManageZonePrices = () => {
                 name="perKm"
                 value={formData.perKm}
                 onChange={(e) => setFormData({ ...formData, perKm: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
               />
             </div>
             <div>
@@ -259,7 +259,7 @@ const ManageZonePrices = () => {
                 name="perMinute"
                 value={formData.perMinute}
                 onChange={(e) => setFormData({ ...formData, perMinute: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
               />
             </div>
           </div>
@@ -273,7 +273,7 @@ const ManageZonePrices = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
             >
               {t('save', language)}
             </button>
@@ -285,6 +285,7 @@ const ManageZonePrices = () => {
 }
 
 export default ManageZonePrices
+
 
 
 

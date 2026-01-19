@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import Logo from '../components/Logo'
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -50,7 +51,9 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tovo</h1>
+          <div className="flex justify-center mb-4">
+            <Logo showText={true} />
+          </div>
           <p className="text-gray-600 mt-2">Create your account</p>
         </div>
 
@@ -175,4 +178,5 @@ const Register = () => {
 }
 
 export default Register
+
 

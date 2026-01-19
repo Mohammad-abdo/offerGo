@@ -67,7 +67,7 @@ const Wallets = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -89,7 +89,7 @@ const Wallets = () => {
               <p className="text-sm font-medium text-gray-600">Total Wallets</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">{wallets.length}</p>
             </div>
-            <FiDollarSign className="text-3xl text-blue-600" />
+            <FiDollarSign className="text-3xl text-orange-600" />
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -123,7 +123,7 @@ const Wallets = () => {
             placeholder={t('search', language)}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -153,7 +153,7 @@ const Wallets = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-semibold">
                             {wallet.user?.firstName?.[0] || 'U'}
                           </div>
                         </div>
@@ -178,7 +178,7 @@ const Wallets = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => handleOpenModal(wallet)}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-orange-600 hover:text-orange-900"
                       >
                         <FiPlus className="inline mr-1" />
                         Manage
@@ -212,7 +212,7 @@ const Wallets = () => {
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             >
               <option value="credit">Add Funds (Credit)</option>
               <option value="debit">Deduct Funds (Debit)</option>
@@ -228,7 +228,7 @@ const Wallets = () => {
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               required
               min="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
           </div>
           <div>
@@ -238,7 +238,7 @@ const Wallets = () => {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows="3"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
             />
           </div>
           <div className="flex justify-end space-x-3 mt-6">
@@ -251,7 +251,7 @@ const Wallets = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
             >
               {t('save', language)}
             </button>
@@ -263,6 +263,7 @@ const Wallets = () => {
 }
 
 export default Wallets
+
 
 
 

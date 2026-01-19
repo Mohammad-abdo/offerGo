@@ -30,9 +30,9 @@ export const ThemeProvider = ({ children }) => {
     const [primaryColor, setPrimaryColor] = useState(() => {
         if (typeof window !== "undefined") {
             const saved = localStorage.getItem("primaryColor");
-            return saved || "blue";
+            return saved || "orange";
         }
-        return "blue";
+        return "orange";
     });
 
     // Define color map and update function before useEffects
@@ -184,12 +184,12 @@ export const ThemeProvider = ({ children }) => {
 
     const colors = {
         blue: {
-            primary: "from-blue-500 to-blue-600",
-            primaryHover: "hover:from-blue-600 hover:to-blue-700",
-            bg: "bg-blue-50",
-            text: "text-blue-600",
-            border: "border-blue-200",
-            ring: "ring-blue-500",
+            primary: "from-orange-500 to-orange-600",
+            primaryHover: "hover:from-orange-600 hover:to-orange-700",
+            bg: "bg-orange-50",
+            text: "text-orange-600",
+            border: "border-orange-200",
+            ring: "ring-orange-500",
         },
         indigo: {
             primary: "from-indigo-500 to-indigo-600",
@@ -268,3 +268,4 @@ export const ThemeProvider = ({ children }) => {
         <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
     );
 };
+

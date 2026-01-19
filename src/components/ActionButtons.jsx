@@ -40,7 +40,7 @@ const ActionButtons = ({
                 onView()
                 setShowDropdown(false)
               }}
-              className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center space-x-2"
+              className="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 flex items-center space-x-2"
             >
               <FiEye size={16} />
               <span>View</span>
@@ -90,7 +90,7 @@ const ActionButtons = ({
           {showView && (
             <button
               onClick={onView}
-              className={`${buttonClass} text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 group relative`}
+              className={`${buttonClass} text-orange-600 hover:text-orange-800 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200 group relative`}
               title="View"
             >
               <FiEye size={iconSize} />
@@ -132,5 +132,6 @@ const ActionButtons = ({
 }
 
 export default ActionButtons
+
 
 

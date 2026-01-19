@@ -39,7 +39,7 @@ const References = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     )
   }
@@ -61,7 +61,7 @@ const References = () => {
               <p className="text-sm font-medium text-gray-600">Total References</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">{references.length}</p>
             </div>
-            <FiUsers className="text-3xl text-blue-600" />
+            <FiUsers className="text-3xl text-orange-600" />
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -97,7 +97,7 @@ const References = () => {
             placeholder={t('search', language)}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -137,7 +137,7 @@ const References = () => {
                       <div className="text-sm text-gray-500">{ref.referredUser?.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
                         {ref.referralCode}
                       </span>
                     </td>
@@ -156,6 +156,7 @@ const References = () => {
 }
 
 export default References
+
 
 
 

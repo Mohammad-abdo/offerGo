@@ -1,0 +1,333 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --font-size-base: 1rem;
+    --font-size-heading: 1.875rem;
+    --font-size-subheading: 1.25rem;
+    
+    /* Primary color variables - default to blue */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+  }
+
+  [data-font-size="small"] {
+    --font-size-base: 0.875rem;
+    --font-size-heading: 1.5rem;
+    --font-size-subheading: 1.125rem;
+  }
+
+  [data-font-size="medium"] {
+    --font-size-base: 1rem;
+    --font-size-heading: 1.875rem;
+    --font-size-subheading: 1.25rem;
+  }
+
+  [data-font-size="large"] {
+    --font-size-base: 1.125rem;
+    --font-size-heading: 2.25rem;
+    --font-size-subheading: 1.5rem;
+  }
+
+  html {
+    font-size: var(--font-size-base);
+  }
+
+  body {
+    font-size: var(--font-size-base);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1 {
+    font-size: var(--font-size-heading);
+  }
+
+  h2 {
+    font-size: var(--font-size-subheading);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.5s ease-out;
+  }
+
+  .animate-slide-left {
+    animation: slideLeft 0.5s ease-out;
+  }
+
+  .animate-slide-right {
+    animation: slideRight 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideRight {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+}
+
+/* RTL Table Support - Use text-start for proper RTL/LTR support */
+[dir="rtl"] table th,
+[dir="rtl"] table td {
+  text-align: right;
+}
+
+[dir="ltr"] table th,
+[dir="ltr"] table td {
+  text-align: left;
+}
+
+/* RTL Input Support */
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="password"],
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] input[type="number"],
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="ltr"] input[type="text"],
+[dir="ltr"] input[type="email"],
+[dir="ltr"] input[type="password"],
+[dir="ltr"] input[type="tel"],
+[dir="ltr"] input[type="number"],
+[dir="ltr"] textarea,
+[dir="ltr"] select {
+  text-align: left;
+  direction: ltr;
+}
+
+/* RTL Icon Positioning in relative containers */
+[dir="rtl"] .relative > svg.absolute.left-3 {
+  left: auto;
+  right: 0.75rem;
+}
+
+[dir="rtl"] .relative > svg.absolute.right-3 {
+  right: auto;
+  left: 0.75rem;
+}
+
+/* RTL Padding Adjustments for inputs with icons */
+[dir="rtl"] input.pl-10 {
+  padding-left: 1rem;
+  padding-right: 2.5rem;
+}
+
+[dir="rtl"] select.pl-10 {
+  padding-left: 2rem;
+  padding-right: 2.5rem;
+}
+
+/* RTL Margin Adjustments */
+[dir="rtl"] .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .mr-3 {
+  margin-right: 0;
+  margin-left: 0.75rem;
+}
+
+[dir="rtl"] .ml-3 {
+  margin-left: 0;
+  margin-right: 0.75rem;
+}
+
+/* RTL Flex Direction */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* RTL Table Column Alignment */
+[dir="rtl"] table th.text-left,
+[dir="rtl"] table td.text-left {
+  text-align: right;
+}
+
+[dir="rtl"] table th.text-right,
+[dir="rtl"] table td.text-right {
+  text-align: left;
+}
+
+/* RTL Justify Content */
+[dir="rtl"] .justify-start {
+  justify-content: flex-end;
+}
+
+[dir="rtl"] .justify-end {
+  justify-content: flex-start;
+}
+
+/* Hide Scrollbar but Keep Functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Smooth Scrollbar Styling (Optional - for custom scrollbar) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+code {
+  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+

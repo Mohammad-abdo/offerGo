@@ -190,16 +190,32 @@ const Layout = () => {
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md'
             }`}
           >
-            <div className={`flex items-center ${sidebarOpen ? (language === 'ar' ? 'gap-3 flex-row-reverse' : 'gap-3') : 'gap-0'}`}>
-              <item.icon className={`text-lg flex-shrink-0 ${active || hasActiveChild ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors ${language === 'ar' ? 'order-2' : ''}`} />
-              {sidebarOpen && <span className={`font-semibold whitespace-nowrap ${language === 'ar' ? 'text-right order-1' : 'text-left'}`}>{item.name}</span>}
-            </div>
-            {sidebarOpen && (
-              <FiChevronDown
-                className={`transition-all duration-300 flex-shrink-0 ${expanded ? 'rotate-180' : ''} ${language === 'ar' ? 'scale-x-[-1]' : ''} ${
-                  active || hasActiveChild ? 'text-white' : 'text-gray-400'
-                }`}
-              />
+            {language === 'ar' && sidebarOpen ? (
+              <>
+                <FiChevronDown
+                  className={`transition-all duration-300 flex-shrink-0 order-first ${expanded ? '' : 'rotate-180'} ${
+                    active || hasActiveChild ? 'text-white' : 'text-gray-400'
+                  }`}
+                />
+                <div className="flex items-center gap-3 flex-row-reverse flex-1">
+                  <item.icon className={`text-lg flex-shrink-0 ${active || hasActiveChild ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors`} />
+                  <span className="font-semibold whitespace-nowrap text-right">{item.name}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={`flex items-center ${sidebarOpen ? 'gap-3' : 'gap-0'}`}>
+                  <item.icon className={`text-lg flex-shrink-0 ${active || hasActiveChild ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors`} />
+                  {sidebarOpen && <span className="font-semibold whitespace-nowrap text-left">{item.name}</span>}
+                </div>
+                {sidebarOpen && (
+                  <FiChevronDown
+                    className={`transition-all duration-300 flex-shrink-0 ${expanded ? 'rotate-180' : ''} ${
+                      active || hasActiveChild ? 'text-white' : 'text-gray-400'
+                    }`}
+                  />
+                )}
+              </>
             )}
           </button>
           {sidebarOpen && (
@@ -207,8 +223,11 @@ const Layout = () => {
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 expanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
               }`}
+              style={{
+                willChange: 'max-height, opacity'
+              }}
             >
-              <div className={`mt-2 ${language === 'ar' ? 'mr-2' : 'ml-2'} space-y-1 ${language === 'ar' ? 'border-r-2' : 'border-l-2'} ${colors.border || 'border-orange-200 dark:border-orange-800'} ${language === 'ar' ? 'pr-3' : 'pl-3'}`}>
+              <div className={`mt-2 ${language === 'ar' ? 'mr-4' : 'ml-4'} space-y-1 ${language === 'ar' ? 'border-r-2' : 'border-l-2'} ${colors.border || 'border-orange-200 dark:border-orange-800'} ${language === 'ar' ? 'pr-4' : 'pl-4'} py-1`}>
                 {item.children.map((child, index) => {
                   const childActive = isActive(child.href)
                   return (
@@ -216,7 +235,7 @@ const Layout = () => {
                       key={child.key}
                       to={child.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center ${language === 'ar' ? 'flex-row-reverse justify-between' : 'gap-3'} px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group ${
+                      className={`flex items-center ${language === 'ar' ? 'flex-row-reverse' : ''} ${language === 'ar' ? 'justify-between' : 'gap-3'} px-3 py-2 text-sm rounded-lg transition-all duration-200 group ${
                         childActive
                           ? `bg-gradient-to-r ${colors.primary} text-white shadow-md font-medium`
                           : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-gray-100'
@@ -225,12 +244,12 @@ const Layout = () => {
                         animationDelay: expanded ? `${index * 30}ms` : '0ms'
                       }}
                     >
-                      <div className={`flex items-center ${language === 'ar' ? 'flex-row-reverse gap-3' : 'gap-3'}`}>
-                        <child.icon className={`text-base flex-shrink-0 ${childActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'} transition-colors ${language === 'ar' ? 'order-2' : ''}`} />
-                        <span className={`whitespace-nowrap ${language === 'ar' ? 'text-right order-1' : 'text-left'}`}>{child.name}</span>
+                      <div className={`flex items-center ${language === 'ar' ? 'flex-row-reverse gap-2' : 'gap-2'}`}>
+                        <child.icon className={`text-base flex-shrink-0 ${childActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'} transition-colors`} />
+                        <span className={`whitespace-nowrap ${language === 'ar' ? 'text-right' : 'text-left'}`}>{child.name}</span>
                       </div>
                       {childActive && (
-                        <div className={`${language === 'ar' ? 'ml-0 mr-2' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white flex-shrink-0`}></div>
+                        <div className={`${language === 'ar' ? 'mr-auto' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white flex-shrink-0`}></div>
                       )}
                     </Link>
                   )
@@ -300,6 +319,20 @@ const Layout = () => {
             )}
           </div>
 
+          {/* Search Bar in Sidebar */}
+          {sidebarOpen && (
+            <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="relative">
+                <FiSearch className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
+                <input
+                  type="text"
+                  placeholder={t('search', language)}
+                  className={`w-full ${language === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Navigation */}
           <nav className="flex-1 px-3 py-4 overflow-y-auto overflow-x-hidden hide-scrollbar custom-scrollbar">
             <div className="space-y-1">
@@ -328,6 +361,18 @@ const Layout = () => {
             >
               <FiX size={20} />
             </button>
+          </div>
+
+          {/* Search Bar in Mobile Sidebar */}
+          <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="relative">
+              <FiSearch className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
+              <input
+                type="text"
+                placeholder={t('search', language)}
+                className={`w-full ${language === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+              />
+            </div>
           </div>
 
           {/* Navigation */}

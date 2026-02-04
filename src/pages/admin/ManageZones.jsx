@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import api from '../../utils/api'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
-import { FiPlus, FiEdit, FiTrash2, FiMapPin } from 'react-icons/fi'
+import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiRefreshCw, FiGrid, FiList, FiCheckCircle, FiXCircle } from 'react-icons/fi'
 import Modal from '../../components/Modal'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import SearchInput from '../../components/SearchInput'
 import { showSuccess, showError } from '../../utils/toast'
 import TableHeader from '../../components/TableHeader'
 
@@ -13,6 +15,9 @@ const ManageZones = () => {
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingZone, setEditingZone] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [viewMode, setViewMode] = useState('cards')
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
   const [formData, setFormData] = useState({
     name: '',
     latitude: '',
@@ -111,15 +116,20 @@ const ManageZones = () => {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm(t('deleteConfirm', language))) return
-    try {
-      await api.post(`/manage-zones/managezone-delete/${id}`)
-      showSuccess(t('deleted', language) || 'Zone deleted successfully')
-      await fetchZones()
-    } catch (error) {
-      console.error('Error deleting zone:', error)
-      showError(error.response?.data?.message || t('failed', language) || 'Failed to delete zone')
-    }
+    setConfirmDialog({
+      isOpen: true,
+      onConfirm: async () => {
+        try {
+          await api.post(`/manage-zones/managezone-delete/${id}`)
+          showSuccess(t('deleted', language) || 'Zone deleted successfully')
+          await fetchZones()
+        } catch (error) {
+          console.error('Error deleting zone:', error)
+          showError(error.response?.data?.message || t('failed', language) || 'Failed to delete zone')
+        }
+      },
+      message: t('deleteConfirm', language),
+    })
   }
 
   const initMap = async (zone = null) => {
@@ -325,85 +335,149 @@ const ManageZones = () => {
     }
   }
 
+  const filteredZones = zones.filter((z) => !searchTerm || (z.name || '').toLowerCase().includes(searchTerm.toLowerCase()))
+  const totalCount = zones.length
+  const activeCount = zones.filter((z) => z.status === 1).length
+  const inactiveCount = zones.filter((z) => z.status !== 1).length
+  const statCards = [
+    { label: language === 'ar' ? 'إجمالي المناطق' : 'Total zones', value: totalCount, icon: FiMapPin, bgLight: 'bg-slate-50 dark:bg-slate-900/30', iconColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-700' },
+    { label: t('active', language), value: activeCount, icon: FiCheckCircle, bgLight: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', borderColor: 'border-emerald-200 dark:border-emerald-800' },
+    { label: t('inactive', language), value: inactiveCount, icon: FiXCircle, bgLight: 'bg-red-50 dark:bg-red-900/20', iconColor: 'text-red-600 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-800' },
+  ]
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+        <div className="animate-spin rounded-full h-14 w-14 border-2 border-orange-500 border-t-transparent" />
+        <p className="text-gray-500 dark:text-gray-400 font-medium">{language === 'ar' ? 'جاري تحميل المناطق...' : 'Loading zones...'}</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('manageZones', language) || 'Manage Zones'}</h1>
-          <p className="text-gray-600 mt-1">{t('manageServiceZones', language) || 'Manage service zones and boundaries'}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{t('manageZones', language) || 'Manage Zones'}</h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">{t('manageServiceZones', language) || 'Manage service zones and boundaries'}</p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-        >
-          <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} />
-          {t('addZone', language) || 'Add Zone'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={fetchZones} className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <FiRefreshCw size={18} />
+            {t('refresh', language)}
+          </button>
+          <button type="button" onClick={() => handleOpenModal()} className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 shadow-lg transition-colors">
+            <FiPlus size={18} />
+            {t('addZone', language) || 'Add Zone'}
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      <div className="grid gap-4 sm:grid-cols-3">
+        {statCards.map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{stat.label}</span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('search', language) + '...'} language={language} />
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button type="button" onClick={() => setViewMode('cards')} className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'بطاقات' : 'Cards'}>
+              <FiGrid size={20} />
+            </button>
+            <button type="button" onClick={() => setViewMode('table')} className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'جدول' : 'Table'}>
+              <FiList size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 px-6 py-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FiMapPin className="text-orange-500" size={24} />
+            {language === 'ar' ? 'قائمة المناطق' : 'Zones list'}
+          </h2>
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{filteredZones.length} {language === 'ar' ? 'منطقة' : 'zone(s)'}</p>
+        </div>
+
+        {filteredZones.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiMapPin className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">{t('noData', language)}</h3>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredZones.map((zone) => (
+              <div key={zone.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white">
+                      <FiMapPin size={24} />
+                    </div>
+                    <span className="font-semibold text-gray-900 dark:text-white">{zone.name}</span>
+                  </div>
+                  <span className={`shrink-0 rounded-lg px-2.5 py-0.5 text-xs font-semibold ${zone.status === 1 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'}`}>
+                    {zone.status === 1 ? t('active', language) : t('inactive', language)}
+                  </span>
+                </div>
+                {zone.description && <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{zone.description}</p>}
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-2">
+                  <button type="button" onClick={() => handleOpenModal(zone)} className="p-2 rounded-lg text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors" title={t('edit', language)}><FiEdit size={18} /></button>
+                  <button type="button" onClick={() => handleDelete(zone.id)} className="p-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title={t('delete', language)}><FiTrash2 size={18} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-100 dark:bg-gray-700/70">
               <tr>
-                <TableHeader>{t('name', language)}</TableHeader>
-                <TableHeader>{t('status', language)}</TableHeader>
-                <TableHeader>{t('actions', language)}</TableHeader>
+                <TableHeader language={language}>{t('name', language)}</TableHeader>
+                <TableHeader language={language}>{t('status', language)}</TableHeader>
+                <TableHeader language={language}>{t('actions', language)}</TableHeader>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {zones.length === 0 ? (
-                <tr>
-                  <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
-                    {t('noData', language)}
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+              {filteredZones.map((zone) => (
+                <tr key={zone.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <FiMapPin className="text-orange-600 dark:text-orange-400 shrink-0" size={18} />
+                      <span className="font-medium text-gray-900 dark:text-white">{zone.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-lg ${zone.status === 1 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'}`}>
+                      {zone.status === 1 ? t('active', language) : t('inactive', language)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => handleOpenModal(zone)} className="p-2 rounded-lg text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors" title={t('edit', language)}><FiEdit size={18} /></button>
+                      <button type="button" onClick={() => handleDelete(zone.id)} className="p-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title={t('delete', language)}><FiTrash2 size={18} /></button>
+                    </div>
                   </td>
                 </tr>
-              ) : (
-                zones.map((zone) => (
-                  <tr key={zone.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <FiMapPin className="mr-2 text-orange-600" />
-                        <span className="text-sm font-medium text-gray-900">{zone.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        zone.status === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {zone.status === 1 ? t('active', language) : t('inactive', language)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleOpenModal(zone)}
-                          className="text-orange-600 hover:text-orange-900"
-                        >
-                          <FiEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(zone.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
+        )}
       </div>
 
       <Modal
@@ -516,26 +590,18 @@ const ManageZones = () => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 mt-6">
-            <button
-              type="button"
-              onClick={() => {
-                cleanupMap()
-                setIsModalOpen(false)
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <button type="button" onClick={() => { cleanupMap(); setIsModalOpen(false) }} className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium">
               {t('cancel', language)}
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-            >
+            <button type="submit" className="px-5 py-2.5 bg-orange-600 text-white rounded-xl hover:bg-orange-700 font-medium">
               {t('save', language)}
             </button>
           </div>
         </form>
       </Modal>
+
+      <ConfirmDialog isOpen={confirmDialog.isOpen} onClose={() => setConfirmDialog({ isOpen: false, onConfirm: null, message: '' })} onConfirm={confirmDialog.onConfirm || (() => {})} message={confirmDialog.message} type="danger" />
     </div>
   )
 }

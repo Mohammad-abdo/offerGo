@@ -3,10 +3,22 @@ import api from '../../utils/api'
 import Modal from '../../components/Modal'
 import ActionButtons from '../../components/ActionButtons'
 import ConfirmDialog from '../../components/ConfirmDialog'
+import SearchInput from '../../components/SearchInput'
+import FilterSelect from '../../components/FilterSelect'
+import TableHeader from '../../components/TableHeader'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
 import { showSuccess, showError } from '../../utils/toast'
-import { FiSearch, FiPlus, FiAlertTriangle, FiPhone, FiUser } from 'react-icons/fi'
+import {
+  FiPlus,
+  FiRefreshCw,
+  FiAlertTriangle,
+  FiPhone,
+  FiGrid,
+  FiList,
+  FiCheckCircle,
+  FiXCircle,
+} from 'react-icons/fi'
 
 const SOS = () => {
   const { language } = useLanguage()
@@ -21,6 +33,7 @@ const SOS = () => {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('cards')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
 
   useEffect(() => {
@@ -29,12 +42,14 @@ const SOS = () => {
 
   const fetchSosContacts = async () => {
     try {
+      setLoading(true)
       const response = await api.get('/sos/sos-list')
       if (response.data.success) {
         setSosContacts(response.data.data || [])
       }
     } catch (error) {
       console.error('Error fetching SOS contacts:', error)
+      showError(error.response?.data?.message || t('failed', language))
     } finally {
       setLoading(false)
     }
@@ -46,7 +61,7 @@ const SOS = () => {
       setFormData({
         name: sos.name || '',
         contactNumber: sos.contactNumber || '',
-        status: sos.status || 1,
+        status: sos.status ?? 1,
       })
     } else {
       setEditingSos(null)
@@ -98,192 +113,326 @@ const SOS = () => {
     })
   }
 
-  const filteredContacts = sosContacts.filter(contact => {
-    const matchesSearch = !searchTerm || 
-      contact.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.contactNumber?.includes(searchTerm)
-    const matchesStatus = statusFilter === 'all' || contact.status.toString() === statusFilter
+  const filteredContacts = sosContacts.filter((contact) => {
+    const matchesSearch =
+      !searchTerm ||
+      (contact.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (contact.contactNumber || '').includes(searchTerm)
+    const matchesStatus = statusFilter === 'all' || String(contact.status) === statusFilter
     return matchesSearch && matchesStatus
   })
 
-  if (loading) {
+  const totalCount = sosContacts.length
+  const activeCount = sosContacts.filter((c) => c.status === 1).length
+  const inactiveCount = sosContacts.filter((c) => c.status !== 1).length
+
+  const statCards = [
+    {
+      label: language === 'ar' ? 'إجمالي جهات الاتصال' : 'Total contacts',
+      value: totalCount,
+      icon: FiAlertTriangle,
+      bgLight: 'bg-slate-50 dark:bg-slate-900/30',
+      iconColor: 'text-slate-600 dark:text-slate-400',
+      borderColor: 'border-slate-200 dark:border-slate-700',
+    },
+    {
+      label: t('active', language),
+      value: activeCount,
+      icon: FiCheckCircle,
+      bgLight: 'bg-emerald-50 dark:bg-emerald-900/20',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      borderColor: 'border-emerald-200 dark:border-emerald-800',
+    },
+    {
+      label: t('inactive', language),
+      value: inactiveCount,
+      icon: FiXCircle,
+      bgLight: 'bg-red-50 dark:bg-red-900/20',
+      iconColor: 'text-red-600 dark:text-red-400',
+      borderColor: 'border-red-200 dark:border-red-800',
+    },
+  ]
+
+  if (loading && sosContacts.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+        <div className="animate-spin rounded-full h-14 w-14 border-2 border-orange-500 border-t-transparent" />
+        <p className="text-gray-500 dark:text-gray-400 font-medium">
+          {language === 'ar' ? 'جاري تحميل جهات اتصال الطوارئ...' : 'Loading SOS contacts...'}
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('sos', language)}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage emergency SOS contacts</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            {t('sos', language)}
+          </h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">
+            {language === 'ar' ? 'إدارة جهات اتصال الطوارئ (SOS).' : 'Manage emergency SOS contacts.'}
+          </p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
-        >
-          <FiPlus className="mr-2" size={20} />
-          Add SOS Contact
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={fetchSosContacts}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            <FiRefreshCw size={18} />
+            {t('refresh', language)}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOpenModal()}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 shadow-lg transition-colors"
+          >
+            <FiPlus size={20} />
+            {language === 'ar' ? 'إضافة جهة اتصال' : 'Add SOS Contact'}
+          </button>
+        </div>
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder={t('search', language) + '...'}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {statCards.map((stat) => (
+          <div
+            key={stat.label}
+            className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {stat.label}
+                </span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
           </div>
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
+        ))}
+      </div>
+
+      {/* Search + filter + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={t('search', language) + '...'}
+                language={language}
+              />
+            </div>
+            <FilterSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} language={language}>
               <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
               <option value="1">{t('active', language)}</option>
               <option value="0">{t('inactive', language)}</option>
-            </select>
+            </FilterSelect>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button
+              type="button"
+              onClick={() => setViewMode('cards')}
+              className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+              title={language === 'ar' ? 'بطاقات' : 'Cards'}
+            >
+              <FiGrid size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+              title={language === 'ar' ? 'جدول' : 'Table'}
+            >
+              <FiList size={20} />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Cards Grid */}
-      {filteredContacts.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
-          <div className="flex flex-col items-center">
-            <div className="text-gray-400 mb-2">
-              <FiAlertTriangle size={48} />
+      {/* SOS list: Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 px-6 py-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FiAlertTriangle className="text-red-500" size={24} />
+            {language === 'ar' ? 'قائمة جهات اتصال الطوارئ' : 'SOS contacts list'}
+          </h2>
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+            {filteredContacts.length} {language === 'ar' ? 'جهة اتصال' : 'contact(s)'}
+          </p>
+        </div>
+
+        {filteredContacts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 mb-6">
+              <FiAlertTriangle className="text-red-500 dark:text-red-400" size={48} />
             </div>
-            <p className="text-gray-500 dark:text-gray-400 font-medium">{t('noData', language)}</p>
-            {searchTerm && (
-              <p className="text-gray-400 text-sm mt-1">{t('tryAdjustingYourSearch', language) || 'Try adjusting your search or filters'}</p>
-            )}
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">
+              {t('noData', language)}
+            </h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">
+              {searchTerm ? (t('tryAdjustingYourSearch', language) || 'Try adjusting your search') : (language === 'ar' ? 'أضف جهة اتصال طوارئ.' : 'Add an SOS contact.')}
+            </p>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredContacts.map((contact) => (
-            <div
-              key={contact.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 animate-scale-in"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-xl font-bold">
-                    <FiAlertTriangle size={24} />
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredContacts.map((contact) => (
+              <div
+                key={contact.id}
+                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-red-200 dark:hover:border-red-800 transition-all duration-200"
+              >
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white">
+                      <FiAlertTriangle size={24} />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {contact.name || (language === 'ar' ? 'بدون اسم' : 'Unnamed')}
+                      </h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">SOS Contact</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {contact.name || 'Unnamed Contact'}
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">SOS Contact</p>
-                  </div>
+                  <span
+                    className={`shrink-0 rounded-lg px-2.5 py-0.5 text-xs font-semibold ${
+                      contact.status === 1
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200'
+                        : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    {contact.status === 1 ? t('active', language) : t('inactive', language)}
+                  </span>
                 </div>
-                <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full border ${
-                    contact.status === 1
-                      ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700'
-                      : 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
-                  }`}
-                >
-                  {contact.status === 1 ? t('active', language) : t('inactive', language)}
-                </span>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl mb-4">
+                  <FiPhone className="text-red-600 dark:text-red-400 shrink-0" size={18} />
+                  <p className="font-medium text-gray-900 dark:text-white truncate">
+                    {contact.contactNumber || '-'}
+                  </p>
+                </div>
+                <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <ActionButtons
+                    onEdit={() => handleOpenModal(contact)}
+                    onDelete={() => handleDelete(contact.id)}
+                    size="sm"
+                  />
+                </div>
               </div>
-
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <FiPhone className="text-red-600 dark:text-red-400" size={18} />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Contact Number</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-700/70">
+                <tr>
+                  <TableHeader language={language}>{t('name', language)}</TableHeader>
+                  <TableHeader language={language}>{language === 'ar' ? 'رقم الاتصال' : 'Contact Number'}</TableHeader>
+                  <TableHeader language={language}>{t('status', language)}</TableHeader>
+                  <TableHeader language={language}>{t('actions', language)}</TableHeader>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                {filteredContacts.map((contact) => (
+                  <tr key={contact.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white">
+                          <FiAlertTriangle size={18} />
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {contact.name || (language === 'ar' ? 'بدون اسم' : 'Unnamed')}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                       {contact.contactNumber || '-'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <ActionButtons
-                  onEdit={() => handleOpenModal(contact)}
-                  onDelete={() => handleDelete(contact.id)}
-                  size="sm"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-lg ${
+                          contact.status === 1
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200'
+                            : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {contact.status === 1 ? t('active', language) : t('inactive', language)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <ActionButtons
+                        onEdit={() => handleOpenModal(contact)}
+                        onDelete={() => handleDelete(contact.id)}
+                        size="sm"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title={editingSos ? 'Edit SOS Contact' : 'Add SOS Contact'}
+        title={editingSos ? (language === 'ar' ? 'تعديل جهة اتصال' : 'Edit SOS Contact') : (language === 'ar' ? 'إضافة جهة اتصال' : 'Add SOS Contact')}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Contact Name
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              {language === 'ar' ? 'اسم جهة الاتصال' : 'Contact Name'}
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-orange-500"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Contact Number
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              {language === 'ar' ? 'رقم الاتصال' : 'Contact Number'}
             </label>
             <input
               type="tel"
               value={formData.contactNumber}
               onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-orange-500"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               {t('status', language)}
             </label>
             <select
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: parseInt(e.target.value) })}
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              onChange={(e) => setFormData({ ...formData, status: parseInt(e.target.value, 10) })}
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-orange-500"
             >
               <option value={1}>{t('active', language)}</option>
               <option value={0}>{t('inactive', language)}</option>
             </select>
           </div>
-
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-all duration-200"
+              className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium"
             >
               {t('cancel', language)}
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-medium"
             >
               {editingSos ? t('update', language) : t('create', language)}
             </button>
@@ -291,7 +440,6 @@ const SOS = () => {
         </form>
       </Modal>
 
-      {/* Confirm Dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() => setConfirmDialog({ isOpen: false, onConfirm: null, message: '' })}
@@ -304,4 +452,3 @@ const SOS = () => {
 }
 
 export default SOS
-

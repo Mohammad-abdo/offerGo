@@ -8,7 +8,8 @@ const ActionButtons = ({
   showView = false,
   showEdit = true,
   showDelete = true,
-  size = 'md'
+  size = 'md',
+  forceShowIcons = false
 }) => {
   const [showDropdown, setShowDropdown] = useState(false)
 
@@ -19,9 +20,9 @@ const ActionButtons = ({
     ? 'p-2.5' 
     : 'p-2'
 
-  // On mobile, show dropdown menu if more than 2 buttons
+  // Show dropdown only when more than 2 buttons and not forcing icons
   const buttonCount = [showView, showEdit, showDelete].filter(Boolean).length
-  const useDropdown = buttonCount > 2
+  const useDropdown = buttonCount > 2 && !forceShowIcons
 
   if (useDropdown && showDropdown) {
     return (
@@ -33,7 +34,7 @@ const ActionButtons = ({
         >
           <FiMoreVertical size={iconSize} />
         </button>
-        <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10 min-w-[120px]">
+        <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-[100] min-w-[120px]">
           {showView && (
             <button
               onClick={() => {
@@ -77,7 +78,7 @@ const ActionButtons = ({
 
   return (
     <div className="flex items-center space-x-1 relative">
-      {buttonCount > 2 ? (
+      {buttonCount > 2 && !forceShowIcons ? (
         <button
           onClick={() => setShowDropdown(true)}
           className={`${buttonClass} text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200`}

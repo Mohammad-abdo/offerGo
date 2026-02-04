@@ -39,7 +39,10 @@ import {
   FiMoon,
   FiMap,
   FiStar,
-  FiTarget
+  FiTarget,
+  FiLayers,
+  FiTag,
+  FiBriefcase
 } from 'react-icons/fi'
 
 const Layout = () => {
@@ -67,24 +70,46 @@ const Layout = () => {
     { name: t('rideRequests', language), key: 'rideRequests', href: '/ride-requests', icon: FiNavigation },
     { name: t('dispatch', language), key: 'dispatch', href: '/dispatch', icon: FiActivity },
     { 
-      name: t('maps', language) || 'Maps & Tracking', 
+      name: t('maps', language), 
       key: 'maps',
       icon: FiMap,
       children: [
-        { name: t('vehicleTracking', language) || 'Vehicle Tracking', key: 'vehicleTracking', href: '/vehicle-tracking', icon: FiMap },
-        { name: t('workAreas', language) || 'Work Areas', key: 'workAreas', href: '/work-areas', icon: FiMapPin },
-        { name: t('demandMap', language) || 'Demand Map', key: 'demandMap', href: '/demand-map', icon: FiNavigation },
+        { name: t('vehicleTracking', language), key: 'vehicleTracking', href: '/vehicle-tracking', icon: FiMap },
+        { name: t('workAreas', language), key: 'workAreas', href: '/work-areas', icon: FiMapPin },
+        { name: t('demandMap', language), key: 'demandMap', href: '/demand-map', icon: FiNavigation },
       ]
     },
-    { name: t('services', language), key: 'services', href: '/services', icon: FiSettings },
     { 
-      name: t('zones', language) || 'Zones & Regions', 
+      name: t('serviceManagement', language), 
+      key: 'serviceManagement', 
+      href: '/service-categories', 
+      icon: FiLayers,
+      children: [
+        { name: t('serviceCategories', language), key: 'serviceCategories', href: '/service-categories', icon: FiLayers },
+        { name: t('passengerVehicles', language), key: 'passengerVehicles', href: '/vehicle-categories-passenger', icon: FiTruck },
+        { name: t('cargoVehicles', language), key: 'cargoVehicles', href: '/vehicle-categories-cargo', icon: FiTruck },
+        { name: t('categoryFeatures', language), key: 'categoryFeatures', href: '/category-features', icon: FiTag },
+      ]
+    },
+    { 
+      name: t('zones', language), 
       key: 'zones',
       icon: FiMapPin,
       children: [
         { name: t('regions', language), key: 'regions', href: '/regions', icon: FiMapPin },
+        { name: t('geographicZones', language), key: 'geographicZones', href: '/geographic-zones', icon: FiMap },
+        { name: t('categoryZoneMapping', language), key: 'zoneMapping', href: '/category-zone-mapping', icon: FiMapPin },
         { name: t('manageZones', language), key: 'manageZones', href: '/manage-zones', icon: FiMapPin },
         { name: t('manageZonePrices', language), key: 'manageZonePrices', href: '/manage-zone-prices', icon: FiDollarSign },
+      ]
+    },
+    { 
+      name: t('pricingAndTrips', language), 
+      key: 'pricingAndTrips',
+      icon: FiDollarSign,
+      children: [
+        { name: t('pricingRules', language), key: 'pricingRules', href: '/pricing-rules', icon: FiDollarSign },
+        { name: t('touristTrips', language), key: 'touristTrips', href: '/tourist-trips', icon: FiBriefcase },
       ]
     },
     { name: t('coupons', language), key: 'coupons', href: '/coupons', icon: FiGift },
@@ -98,19 +123,19 @@ const Layout = () => {
       ]
     },
     { 
-      name: t('support', language) || 'Support', 
+      name: t('support', language), 
       key: 'support',
       icon: FiMessageSquare,
       children: [
         { name: t('complaints', language), key: 'complaints', href: '/complaints', icon: FiAlertCircle },
         { name: t('sos', language), key: 'sos', href: '/sos', icon: FiAlertCircle },
-        { name: t('customerSupport', language) || 'Customer Support', key: 'customerSupport', href: '/customer-support', icon: FiMessageSquare },
+        { name: t('customerSupport', language), key: 'customerSupport', href: '/customer-support', icon: FiMessageSquare },
         { name: t('faqs', language), key: 'faqs', href: '/faqs', icon: FiHelpCircle },
         { name: t('cancellations', language), key: 'cancellations', href: '/cancellations', icon: FiXCircle },
       ]
     },
     { 
-      name: t('financial', language) || 'Financial', 
+      name: t('financial', language), 
       key: 'financial',
       icon: FiDollarSign,
       children: [
@@ -138,9 +163,9 @@ const Layout = () => {
         { name: t('smsTemplates', language), key: 'smsTemplates', href: '/sms-templates', icon: FiMessageSquare },
         { name: t('languages', language), key: 'languages', href: '/languages', icon: FiGlobe },
         { name: t('pages', language), key: 'pages', href: '/pages', icon: FiFileText },
-        { name: t('whyChoose', language) || 'Why Choose Us', key: 'whyChoose', href: '/why-choose', icon: FiStar },
-        { name: t('ourMission', language) || 'Our Mission', key: 'ourMission', href: '/our-mission', icon: FiTarget },
-        { name: t('clientTestimonials', language) || 'Client Testimonials', key: 'clientTestimonials', href: '/client-testimonials', icon: FiUser },
+        { name: t('whyChoose', language), key: 'whyChoose', href: '/why-choose', icon: FiStar },
+        { name: t('ourMission', language), key: 'ourMission', href: '/our-mission', icon: FiTarget },
+        { name: t('clientTestimonials', language), key: 'clientTestimonials', href: '/client-testimonials', icon: FiUser },
       ]
     },
   ]
@@ -184,13 +209,13 @@ const Layout = () => {
           <button
             data-key={item.key}
             onClick={handleExpand}
-            className={`w-full flex items-center ${sidebarOpen ? (language === 'ar' ? 'justify-between flex-row-reverse' : 'justify-between') : 'justify-center'} px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group ${
+            className={`w-full flex items-center ${sidebarOpen ? (isRtl ? 'justify-between flex-row-reverse' : 'justify-between') : 'justify-center'} px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group ${
               active || hasActiveChild
                 ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg shadow-orange-500/20`
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md'
             }`}
           >
-            {language === 'ar' && sidebarOpen ? (
+            {isRtl && sidebarOpen ? (
               <>
                 <FiChevronDown
                   className={`transition-all duration-300 flex-shrink-0 order-first ${expanded ? '' : 'rotate-180'} ${
@@ -227,7 +252,7 @@ const Layout = () => {
                 willChange: 'max-height, opacity'
               }}
             >
-              <div className={`mt-2 ${language === 'ar' ? 'mr-4' : 'ml-4'} space-y-1 ${language === 'ar' ? 'border-r-2' : 'border-l-2'} ${colors.border || 'border-orange-200 dark:border-orange-800'} ${language === 'ar' ? 'pr-4' : 'pl-4'} py-1`}>
+              <div className={`mt-2 ${isRtl ? 'mr-4' : 'ml-4'} space-y-1 ${isRtl ? 'border-r-2' : 'border-l-2'} ${colors.border || 'border-orange-200 dark:border-orange-800'} ${isRtl ? 'pr-4' : 'pl-4'} py-1`}>
                 {item.children.map((child, index) => {
                   const childActive = isActive(child.href)
                   return (
@@ -235,7 +260,7 @@ const Layout = () => {
                       key={child.key}
                       to={child.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center ${language === 'ar' ? 'flex-row-reverse' : ''} ${language === 'ar' ? 'justify-between' : 'gap-3'} px-3 py-2 text-sm rounded-lg transition-all duration-200 group ${
+                      className={`flex items-center ${isRtl ? 'flex-row-reverse' : ''} ${isRtl ? 'justify-between' : 'gap-3'} px-3 py-2 text-sm rounded-lg transition-all duration-200 group ${
                         childActive
                           ? `bg-gradient-to-r ${colors.primary} text-white shadow-md font-medium`
                           : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-gray-100'
@@ -244,12 +269,12 @@ const Layout = () => {
                         animationDelay: expanded ? `${index * 30}ms` : '0ms'
                       }}
                     >
-                      <div className={`flex items-center ${language === 'ar' ? 'flex-row-reverse gap-2' : 'gap-2'}`}>
+                        <div className={`flex items-center ${isRtl ? 'flex-row-reverse gap-2' : 'gap-2'}`}>
                         <child.icon className={`text-base flex-shrink-0 ${childActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'} transition-colors`} />
-                        <span className={`whitespace-nowrap ${language === 'ar' ? 'text-right' : 'text-left'}`}>{child.name}</span>
+                        <span className={`whitespace-nowrap ${isRtl ? 'text-right' : 'text-left'}`}>{child.name}</span>
                       </div>
                       {childActive && (
-                        <div className={`${language === 'ar' ? 'mr-auto' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white flex-shrink-0`}></div>
+                        <div className={`${isRtl ? 'mr-auto' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white flex-shrink-0`}></div>
                       )}
                     </Link>
                   )
@@ -265,40 +290,45 @@ const Layout = () => {
       <Link
         to={item.href}
         onClick={() => setMobileMenuOpen(false)}
-        className={`flex items-center ${sidebarOpen ? (language === 'ar' ? 'justify-start flex-row-reverse gap-3' : 'justify-start gap-3') : 'justify-center'} px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group mb-1 ${
+        className={`flex items-center ${sidebarOpen ? (isRtl ? 'justify-start flex-row-reverse gap-3' : 'justify-start gap-3') : 'justify-center'} px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group mb-1 ${
           active
             ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg shadow-orange-500/20`
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:shadow-md'
         }`}
       >
-        <item.icon className={`text-lg flex-shrink-0 ${active ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors ${language === 'ar' ? 'order-2' : ''}`} />
-        {sidebarOpen && <span className={`font-semibold whitespace-nowrap ${language === 'ar' ? 'text-right order-1' : 'text-left'}`}>{item.name}</span>}
+        <item.icon className={`text-lg flex-shrink-0 ${active ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'} transition-colors ${isRtl ? 'order-2' : ''}`} />
+        {sidebarOpen && <span className={`font-semibold whitespace-nowrap ${isRtl ? 'text-right order-1' : 'text-left'}`}>{item.name}</span>}
         {active && sidebarOpen && (
-          <div className={`${language === 'ar' ? 'ml-0 mr-2 order-first' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white animate-pulse flex-shrink-0`}></div>
+          <div className={`${isRtl ? 'ml-0 mr-2 order-first' : 'ml-auto'} w-1.5 h-1.5 rounded-full bg-white animate-pulse flex-shrink-0`}></div>
         )}
       </Link>
     )
   }
 
+  const isRtl = language === 'ar'
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex transition-colors duration-300">
+    <div
+      className="min-h-screen bg-gray-50 dark:bg-gray-900 flex transition-colors duration-300"
+      dir={isRtl ? 'rtl' : 'ltr'}
+    >
       {/* Mobile Menu Button - Removed as it's now in header */}
 
       {/* Sidebar */}
       <aside
-        className={`hidden lg:block fixed top-0 ${language === 'ar' ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out ${language === 'ar' ? 'border-l' : 'border-r'} border-gray-200 dark:border-gray-700 ${
+        className={`hidden lg:block fixed top-0 ${isRtl ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out ${isRtl ? 'border-l' : 'border-r'} border-gray-200 dark:border-gray-700 ${
           sidebarOpen ? 'w-64' : 'w-20'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className={`relative flex items-center ${sidebarOpen ? (language === 'ar' ? 'justify-between flex-row-reverse' : 'justify-between') : 'justify-center'} h-16 px-4 bg-gradient-to-r ${colors.primary} text-white transition-all duration-300 shadow-md`}>
+          <div className={`relative flex items-center ${sidebarOpen ? (isRtl ? 'justify-between flex-row-reverse' : 'justify-between') : 'justify-center'} h-16 px-4 bg-gradient-to-r ${colors.primary} text-white transition-all duration-300 shadow-md`}>
             {sidebarOpen && (
               <>
                 <Logo showText={true} textColor="white" />
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className={`p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm ${language === 'ar' ? 'order-first' : ''}`}
+                  className={`p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm ${isRtl ? 'order-first' : ''}`}
                   title={t('collapseSidebar', language)}
                 >
                   <FiMenu size={20} />
@@ -310,7 +340,7 @@ const Layout = () => {
                 <Logo showText={false} className="mx-auto" />
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className={`absolute ${language === 'ar' ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm`}
+                  className={`absolute ${isRtl ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm`}
                   title={t('expandSidebar', language)}
                 >
                   <FiMenu size={20} />
@@ -323,11 +353,11 @@ const Layout = () => {
           {sidebarOpen && (
             <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="relative">
-                <FiSearch className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
+                <FiSearch className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
                 <input
                   type="text"
                   placeholder={t('search', language)}
-                  className={`w-full ${language === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                  className={`w-full ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                 />
               </div>
             </div>
@@ -347,8 +377,8 @@ const Layout = () => {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`lg:hidden fixed top-0 ${language === 'ar' ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out w-64 ${language === 'ar' ? 'border-l' : 'border-r'} border-gray-200 dark:border-gray-700 ${
-          mobileMenuOpen ? 'translate-x-0' : language === 'ar' ? 'translate-x-full' : '-translate-x-full'
+        className={`lg:hidden fixed top-0 ${isRtl ? 'right-0' : 'left-0'} h-screen bg-white dark:bg-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out w-64 ${isRtl ? 'border-l' : 'border-r'} border-gray-200 dark:border-gray-700 ${
+          mobileMenuOpen ? 'translate-x-0' : isRtl ? 'translate-x-full' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
@@ -366,11 +396,11 @@ const Layout = () => {
           {/* Search Bar in Mobile Sidebar */}
           <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="relative">
-              <FiSearch className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
+              <FiSearch className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
               <input
                 type="text"
                 placeholder={t('search', language)}
-                className={`w-full ${language === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                className={`w-full ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
               />
             </div>
           </div>
@@ -388,13 +418,13 @@ const Layout = () => {
       </aside>
 
       {/* Main Content */}
-      <div className={`flex-1 w-full ${language === 'ar' ? 'lg:mr-64' : 'lg:ml-64'} ${!sidebarOpen && (language === 'ar' ? 'lg:mr-20' : 'lg:ml-20')} transition-all duration-300 min-h-screen`}>
+      <div className={`flex-1 w-full ${isRtl ? 'lg:mr-64' : 'lg:ml-64'} ${!sidebarOpen && (isRtl ? 'lg:mr-20' : 'lg:ml-20')} transition-all duration-300 min-h-screen`}>
         {/* Header */}
         <header className="sticky top-0 z-20 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 relative transition-colors duration-300">
           <div className="px-2 sm:px-4 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
               <div className="flex items-center flex-1 min-w-0">
-                <div className="flex-shrink-0 lg:hidden mr-2">
+                <div className={`flex-shrink-0 lg:hidden ${isRtl ? 'ml-2' : 'mr-2'}`}>
                   <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -405,11 +435,11 @@ const Layout = () => {
                 </div>
                 <div className="flex-1 max-w-lg hidden sm:block">
                   <div className="relative">
-                    <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <FiSearch className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400`} size={18} />
                     <input
                       type="text"
                       placeholder={t('search', language)}
-                      className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className={`w-full ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                     />
                   </div>
                 </div>
@@ -447,7 +477,7 @@ const Layout = () => {
                     <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r ${colors.primary} flex items-center justify-center text-white text-xs sm:text-sm font-semibold`}>
                       {user?.firstName?.[0] || 'U'}
                     </div>
-                    <div className="hidden md:block text-left">
+                    <div className={`hidden md:block ${isRtl ? 'text-right' : 'text-left'}`}>
                       <p className="text-xs font-medium text-gray-900 dark:text-white truncate max-w-[100px]">
                         {user?.firstName} {user?.lastName}
                       </p>
@@ -456,20 +486,20 @@ const Layout = () => {
                     <FiChevronDown className="hidden sm:block text-gray-600 dark:text-gray-300" size={16} />
                   </button>
                   {userMenuOpen && (
-                    <div className={`absolute ${language === 'ar' ? 'left-0' : 'right-0'} mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-scale-in`}>
+                    <div className={`absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-scale-in`}>
                       <Link
                         to="/profile"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        <FiUser className={`${language === 'ar' ? 'ml-3' : 'mr-3'}`} />
+                        <FiUser className={`${isRtl ? 'ml-3' : 'mr-3'}`} />
                         {t('profile', language)}
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                       >
-                        <FiLogOut className={`${language === 'ar' ? 'ml-3' : 'mr-3'}`} />
+                        <FiLogOut className={`${isRtl ? 'ml-3' : 'mr-3'}`} />
                         {t('logout', language)}
                       </button>
                     </div>

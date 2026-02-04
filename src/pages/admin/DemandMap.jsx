@@ -11,12 +11,14 @@ const DemandMap = () => {
   const [drivers, setDrivers] = useState([])
   const [mapLoaded, setMapLoaded] = useState(false)
   const [showDrivers, setShowDrivers] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const loadMapLibrary = () => {
       if (window.L) {
         setMapLoaded(true)
-        initializeMap()
+        setTimeout(initializeMap, 150)
         return
       }
 
@@ -33,7 +35,7 @@ const DemandMap = () => {
       script.crossOrigin = ''
       script.onload = () => {
         setMapLoaded(true)
-        initializeMap()
+        setTimeout(initializeMap, 150)
       }
       document.body.appendChild(script)
     }
@@ -45,8 +47,11 @@ const DemandMap = () => {
         mapRef.current._mapInstance.remove()
         mapRef.current._mapInstance = null
       }
+      mapInstanceRef.current = null
     }
   }, [])
+
+  const mapInstanceRef = useRef(null)
 
   const initializeMap = () => {
     if (!window.L || !mapRef.current) return
@@ -56,6 +61,7 @@ const DemandMap = () => {
       mapRef.current._mapInstance.remove()
       mapRef.current._mapInstance = null
     }
+    mapInstanceRef.current = null
 
     const map = window.L.map(mapRef.current).setView([24.7136, 46.6753], 13)
 
@@ -65,102 +71,95 @@ const DemandMap = () => {
     }).addTo(map)
 
     mapRef.current._mapInstance = map
+    mapInstanceRef.current = map
     loadDemandData(map)
   }
 
   const loadDemandData = async (map) => {
+    setError(null)
+    setLoading(true)
     try {
       const response = await api.get('/demand-map/zones')
-      if (response.data.success) {
-        const { zones: zonesData, drivers: driversData } = response.data.data
-        setZones(zonesData)
-        setDrivers(driversData)
-
-        // Draw zones
-        zonesData.forEach(zone => {
-          const color = zone.intensity === 'red' ? '#FF0000' : 
-                       zone.intensity === 'orange' ? '#FFA500' : '#008000'
-          
-          const circle = window.L.circle([zone.lat, zone.lng], {
-            color: color,
-            fillColor: color,
-            fillOpacity: 0.3,
-            radius: 5000, // 5km radius
-          }).addTo(map)
-
-          circle.bindPopup(`
-            <div class="p-2">
-              <h3 class="font-bold">High Demand Zone</h3>
-              <p>Ride Requests: ${zone.rideCount}</p>
-              <p>Intensity: ${zone.intensity}</p>
-            </div>
-          `)
-        })
-
-        // Draw drivers
-        if (showDrivers) {
-          driversData.forEach(driver => {
-            try {
-              // Validate coordinates
-              if (!driver.latitude || !driver.longitude) {
-                console.warn(`Driver ${driver.id} missing coordinates`)
-                return
-              }
-
-              const lat = parseFloat(driver.latitude)
-              const lng = parseFloat(driver.longitude)
-
-              if (isNaN(lat) || isNaN(lng)) {
-                console.warn(`Driver ${driver.id} has invalid coordinates`)
-                return
-              }
-
-              // Ensure map is ready
-              if (!map || !map._container) {
-                console.warn('Map not ready for markers')
-                return
-              }
-
-              // Create icon using a simpler approach
-              const icon = window.L.divIcon({
-                className: 'driver-marker',
-                html: `
-                  <div class="driver-icon ${driver.isOnline ? 'online' : 'offline'}" style="
-                    width: 25px;
-                    height: 25px;
-                    border-radius: 50%;
-                    background: ${driver.isOnline ? (driver.isAvailable ? '#10b981' : '#f59e0b') : '#6b7280'};
-                    border: 2px solid white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-size: 12px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                  ">
-                    🚗
-                  </div>
-                `,
-                iconSize: [25, 25],
-                iconAnchor: [12, 12],
-              })
-
-              const marker = window.L.marker([lat, lng], { icon })
-              marker.addTo(map)
-              marker.bindPopup(`
-                <div class="p-2">
-                  <h3 class="font-bold">${driver.firstName || ''} ${driver.lastName || ''}</h3>
-                  <p>Status: ${driver.isOnline ? (driver.isAvailable ? 'Available' : 'Busy') : 'Offline'}</p>
-                </div>
-              `)
-            } catch (markerError) {
-              console.error('Error creating marker for driver:', driver.id, markerError)
-            }
-          })
-        }
+      setLoading(false)
+      if (!response.data?.success) {
+        setError(response.data?.message || 'Failed to load demand data')
+        return
       }
-    } catch (error) {
-      console.error('Error loading demand data:', error)
+
+      const { zones: zonesData, drivers: driversData } = response.data.data || {}
+      setZones(zonesData || [])
+      setDrivers(driversData || [])
+
+      // Ensure map is still the active instance and container is in DOM
+      const isMapValid = map && mapInstanceRef.current === map && map._container && document.contains(map._container)
+      if (!isMapValid) return
+
+      // Draw zones
+      (zonesData || []).forEach(zone => {
+        if (zone.lat == null || zone.lng == null) return
+        const color = zone.intensity === 'red' ? '#FF0000' : zone.intensity === 'orange' ? '#FFA500' : '#008000'
+        const circle = window.L.circle([zone.lat, zone.lng], {
+          color,
+          fillColor: color,
+          fillOpacity: 0.3,
+          radius: 5000,
+        })
+        if (mapInstanceRef.current === map) circle.addTo(map)
+        circle.bindPopup(`
+          <div class="p-2">
+            <h3 class="font-bold">High Demand Zone</h3>
+            <p>Ride Requests: ${zone.rideCount ?? 0}</p>
+            <p>Intensity: ${zone.intensity ?? '-'}</p>
+          </div>
+        `)
+      })
+
+      // Draw drivers after map panes are ready (avoids appendChild on undefined)
+      if (!showDrivers || !driversData?.length) return
+
+      const addDriverMarkers = () => {
+        if (mapInstanceRef.current !== map || !map._container || !document.contains(map._container)) return
+
+        const markerPane = map.getPane('markerPane')
+        if (!markerPane || !markerPane.parentNode) return
+
+        driversData.forEach(driver => {
+          try {
+            if (!driver.latitude || !driver.longitude) return
+            const lat = parseFloat(driver.latitude)
+            const lng = parseFloat(driver.longitude)
+            if (isNaN(lat) || isNaN(lng)) return
+
+            const icon = window.L.divIcon({
+              className: 'driver-marker-wrapper',
+              html: `<div class="driver-icon ${driver.isOnline ? 'online' : 'offline'}" style="width:25px;height:25px;border-radius:50%;background:${driver.isOnline ? (driver.isAvailable ? '#10b981' : '#f59e0b') : '#6b7280'};border:2px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,0.3);font-size:12px;color:white">🚗</div>`,
+              iconSize: [25, 25],
+              iconAnchor: [12, 12],
+            })
+
+            const marker = window.L.marker([lat, lng], { icon })
+            marker.addTo(map)
+            marker.bindPopup(`
+              <div class="p-2">
+                <h3 class="font-bold">${driver.firstName || ''} ${driver.lastName || ''}</h3>
+                <p>Status: ${driver.isOnline ? (driver.isAvailable ? 'Available' : 'Busy') : 'Offline'}</p>
+              </div>
+            `)
+          } catch (markerError) {
+            console.error('Error creating marker for driver:', driver.id, markerError)
+          }
+        })
+      }
+
+      if (map.whenReady) {
+        map.whenReady(addDriverMarkers)
+      } else {
+        requestAnimationFrame(addDriverMarkers)
+      }
+    } catch (err) {
+      setLoading(false)
+      console.error('Error loading demand data:', err)
+      setError(err.response?.data?.message || err.message || 'Error loading demand map')
     }
   }
 
@@ -219,8 +218,20 @@ const DemandMap = () => {
         </div>
       </div>
 
+      {/* Error message */}
+      {error && (
+        <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4 text-red-800 dark:text-red-200 text-sm">
+          {error}
+        </div>
+      )}
+
       {/* Map Container */}
-      <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden relative">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 z-10">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600" />
+          </div>
+        )}
         <div ref={mapRef} className="w-full h-full min-h-[600px]" />
       </div>
 

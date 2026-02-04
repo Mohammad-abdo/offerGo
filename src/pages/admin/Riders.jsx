@@ -11,7 +11,16 @@ import ResponsiveTable from '../../components/ResponsiveTable'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
 import { showSuccess, showError } from '../../utils/toast'
-import { FiPlus } from 'react-icons/fi'
+import {
+  FiPlus,
+  FiUsers,
+  FiCheckCircle,
+  FiClock,
+  FiXCircle,
+  FiGrid,
+  FiList,
+  FiSearch,
+} from 'react-icons/fi'
 
 const Riders = () => {
   const { language } = useLanguage()
@@ -30,6 +39,7 @@ const Riders = () => {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('cards')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
   const [selectedRiders, setSelectedRiders] = useState([])
 
@@ -171,22 +181,48 @@ const Riders = () => {
     return matchesSearch && matchesStatus
   })
 
+  const totalCount = riders.length
+  const activeCount = riders.filter((r) => r.status === 'active').length
+  const pendingCount = riders.filter((r) => r.status === 'pending').length
+  const inactiveCount = riders.filter((r) => r.status === 'inactive').length
+  const statCards = [
+    { label: language === 'ar' ? 'إجمالي الركاب' : 'Total riders', value: totalCount, icon: FiUsers, bgLight: 'bg-slate-50 dark:bg-slate-900/30', iconColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-700' },
+    { label: t('active', language), value: activeCount, icon: FiCheckCircle, bgLight: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', borderColor: 'border-emerald-200 dark:border-emerald-800' },
+    { label: t('pending', language), value: pendingCount, icon: FiClock, bgLight: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400', borderColor: 'border-amber-200 dark:border-amber-800' },
+    { label: t('inactive', language), value: inactiveCount, icon: FiXCircle, bgLight: 'bg-red-50 dark:bg-red-900/20', iconColor: 'text-red-600 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-800' },
+  ]
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('riders', language)}</h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">{t('manageAndMonitorAllRiders', language)}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{t('riders', language)}</h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">{t('manageAndMonitorAllRiders', language)}</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 text-white px-5 py-2.5 text-sm font-semibold shadow-lg hover:from-orange-700 hover:to-orange-800 transition-all duration-200 transform hover:-translate-y-0.5"
         >
-          <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={18} />
+          <FiPlus size={18} />
           <span className="hidden sm:inline">{t('addRider', language)}</span>
           <span className="sm:hidden">{t('add', language) || 'Add'}</span>
         </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{stat.label}</span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Bulk Actions */}

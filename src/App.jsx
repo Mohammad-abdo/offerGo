@@ -50,6 +50,16 @@ import OurMission from './pages/admin/OurMission'
 import ClientTestimonials from './pages/admin/ClientTestimonials'
 import DemandMap from './pages/admin/DemandMap'
 import Profile from './pages/Profile'
+import ServiceCategories from './pages/admin/ServiceCategories'
+import ServiceCategoryDetails from './pages/admin/ServiceCategoryDetails'
+import VehicleCategoryDetails from './pages/admin/VehicleCategoryDetails'
+import VehicleCategoriesPassenger from './pages/admin/VehicleCategoriesPassenger'
+import VehicleCategoriesCargo from './pages/admin/VehicleCategoriesCargo'
+import CategoryFeatures from './pages/admin/CategoryFeatures'
+import GeographicZones from './pages/admin/GeographicZones'
+import CategoryZoneMapping from './pages/admin/CategoryZoneMapping'
+import PricingRules from './pages/admin/PricingRules'
+import TouristTrips from './pages/admin/TouristTrips'
 import Layout from './components/Layout'
 
 const queryClient = new QueryClient()
@@ -112,6 +122,19 @@ function App() {
               <Route path="ride-requests/:id" element={<RideRequestDetails />} />
               <Route path="dispatch" element={<Dispatch />} />
               <Route path="services" element={<Services />} />
+              
+              {/* Multi-Service Platform Routes */}
+              <Route path="service-categories" element={<ServiceCategories />} />
+              <Route path="service-categories/:id" element={<ServiceCategoryDetails />} />
+              <Route path="vehicle-categories/:id" element={<VehicleCategoryDetails />} />
+              <Route path="vehicle-categories-passenger" element={<VehicleCategoriesPassenger />} />
+              <Route path="vehicle-categories-cargo" element={<VehicleCategoriesCargo />} />
+              <Route path="category-features" element={<CategoryFeatures />} />
+              <Route path="geographic-zones" element={<GeographicZones />} />
+              <Route path="category-zone-mapping" element={<CategoryZoneMapping />} />
+              <Route path="pricing-rules" element={<PricingRules />} />
+              <Route path="tourist-trips" element={<TouristTrips />} />
+              
               <Route path="regions" element={<Regions />} />
               <Route path="coupons" element={<Coupons />} />
               <Route path="documents" element={<Documents />} />

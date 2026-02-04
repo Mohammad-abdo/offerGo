@@ -1,9 +1,20 @@
 import { useState, useEffect } from 'react'
 import api from '../../utils/api'
+import Modal from '../../components/Modal'
+import SearchInput from '../../components/SearchInput'
+import TableHeader from '../../components/TableHeader'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
-import { FiDollarSign, FiPlus, FiSearch, FiTrendingUp, FiTrendingDown } from 'react-icons/fi'
-import Modal from '../../components/Modal'
+import { showSuccess, showError } from '../../utils/toast'
+import {
+  FiDollarSign,
+  FiRefreshCw,
+  FiGrid,
+  FiList,
+  FiTrendingUp,
+  FiUser,
+  FiCreditCard,
+} from 'react-icons/fi'
 
 const Wallets = () => {
   const { language } = useLanguage()
@@ -13,10 +24,11 @@ const Wallets = () => {
   const [selectedWallet, setSelectedWallet] = useState(null)
   const [formData, setFormData] = useState({
     amount: '',
-    type: 'credit', // credit, debit
+    type: 'credit',
     description: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
+  const [viewMode, setViewMode] = useState('cards')
 
   useEffect(() => {
     fetchWallets()
@@ -24,12 +36,14 @@ const Wallets = () => {
 
   const fetchWallets = async () => {
     try {
+      setLoading(true)
       const response = await api.get('/wallets')
       if (response.data.success) {
         setWallets(response.data.data || [])
       }
     } catch (error) {
       console.error('Error fetching wallets:', error)
+      showError(error.response?.data?.message || t('failed', language))
     } finally {
       setLoading(false)
     }
@@ -43,227 +57,343 @@ const Wallets = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!selectedWallet) return
     try {
       await api.post(`/wallets/${selectedWallet.id}/transaction`, formData)
-      await fetchWallets()
+      showSuccess(t('updated', language))
+      fetchWallets()
       setIsModalOpen(false)
     } catch (error) {
       console.error('Error updating wallet:', error)
-      alert(error.response?.data?.message || 'Failed to update wallet')
+      showError(error.response?.data?.message || t('failed', language))
     }
   }
 
   const totalBalance = wallets.reduce((sum, w) => sum + (parseFloat(w.balance) || 0), 0)
+  const activeWalletsCount = wallets.filter((w) => parseFloat(w.balance) > 0).length
 
   const filteredWallets = wallets.filter((wallet) => {
     const search = searchTerm.toLowerCase()
-    return (
-      wallet.user?.firstName?.toLowerCase().includes(search) ||
-      wallet.user?.lastName?.toLowerCase().includes(search) ||
-      wallet.user?.email?.toLowerCase().includes(search)
-    )
+    const name = `${wallet.user?.firstName || ''} ${wallet.user?.lastName || ''}`.trim().toLowerCase()
+    const email = (wallet.user?.email || '').toLowerCase()
+    const type = (wallet.user?.userType || '').toLowerCase()
+    return !searchTerm || name.includes(search) || email.includes(search) || type.includes(search) || String(wallet.id).includes(search)
   })
 
-  if (loading) {
+  const statCards = [
+    {
+      label: language === 'ar' ? 'إجمالي المحافظ' : 'Total wallets',
+      value: wallets.length,
+      icon: FiCreditCard,
+      bgLight: 'bg-slate-50 dark:bg-slate-900/30',
+      iconColor: 'text-slate-600 dark:text-slate-400',
+      borderColor: 'border-slate-200 dark:border-slate-700',
+    },
+    {
+      label: language === 'ar' ? 'إجمالي الرصيد' : 'Total balance',
+      value: totalBalance.toFixed(2),
+      suffix: ' SAR',
+      icon: FiDollarSign,
+      bgLight: 'bg-emerald-50 dark:bg-emerald-900/20',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      borderColor: 'border-emerald-200 dark:border-emerald-800',
+    },
+    {
+      label: language === 'ar' ? 'محافظ برصيد' : 'With balance',
+      value: activeWalletsCount,
+      icon: FiTrendingUp,
+      bgLight: 'bg-orange-50 dark:bg-orange-900/20',
+      iconColor: 'text-orange-600 dark:text-orange-400',
+      borderColor: 'border-orange-200 dark:border-orange-800',
+    },
+  ]
+
+  if (loading && wallets.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-orange-600"></div>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+        <div className="animate-spin rounded-full h-14 w-14 border-2 border-orange-500 border-t-transparent" />
+        <p className="text-gray-500 dark:text-gray-400 font-medium">
+          {language === 'ar' ? 'جاري تحميل المحافظ...' : 'Loading wallets...'}
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Wallets</h1>
-          <p className="text-gray-600 mt-1">Manage user wallets and transactions</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            {t('wallet', language)}
+          </h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">
+            {language === 'ar'
+              ? 'إدارة محافظ المستخدمين — عرض الأرصدة وإضافة أو خصم الرصيد.'
+              : 'Manage user wallets — view balances and add or deduct funds.'}
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={fetchWallets}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <FiRefreshCw size={18} />
+          {t('refresh', language)}
+        </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Wallets</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">{wallets.length}</p>
-            </div>
-            <FiDollarSign className="text-3xl text-orange-600" />
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Balance</p>
-              <p className="text-2xl font-bold text-green-600 mt-2">${totalBalance.toFixed(2)}</p>
-            </div>
-            <FiTrendingUp className="text-3xl text-green-600" />
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Active Wallets</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
-                {wallets.filter(w => parseFloat(w.balance) > 0).length}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {statCards.map((stat) => (
+          <div
+            key={stat.label}
+            className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {stat.label}
+                </span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">
+                {stat.value}{stat.suffix ?? ''}
               </p>
             </div>
-            <FiDollarSign className="text-3xl text-indigo-600" />
+          </div>
+        ))}
+      </div>
+
+      {/* Search + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <SearchInput
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={t('search', language) + '...'}
+              language={language}
+            />
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button
+              type="button"
+              onClick={() => setViewMode('cards')}
+              className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+              title={language === 'ar' ? 'بطاقات' : 'Cards'}
+            >
+              <FiGrid size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+              title={language === 'ar' ? 'جدول' : 'Table'}
+            >
+              <FiList size={20} />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <div className="relative">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder={t('search', language)}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-          />
+      {/* Wallets: Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 px-6 py-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FiCreditCard className="text-orange-500" size={24} />
+            {language === 'ar' ? 'قائمة المحافظ' : 'Wallets list'}
+          </h2>
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+            {filteredWallets.length} {language === 'ar' ? 'محفظة' : 'wallet(s)'}
+          </p>
         </div>
-      </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredWallets.length === 0 ? (
+        {filteredWallets.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiCreditCard className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">
+              {t('noData', language)}
+            </h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">
+              {language === 'ar' ? 'لا توجد محافظ.' : 'No wallets found.'}
+            </p>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredWallets.map((wallet) => (
+              <div
+                key={wallet.id}
+                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 gap-3">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-lg font-bold text-white">
+                      {(wallet.user?.firstName?.[0] || 'U').toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">
+                        {wallet.user?.firstName} {wallet.user?.lastName}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{wallet.user?.email}</p>
+                    </div>
+                  </div>
+                  <span className="shrink-0 rounded-lg bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 capitalize">
+                    {wallet.user?.userType}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <div className="flex items-center gap-1.5">
+                    <FiDollarSign className="text-emerald-500" size={18} />
+                    <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                      {parseFloat(wallet.balance || 0).toFixed(2)} SAR
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenModal(wallet)}
+                    className="rounded-lg bg-orange-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 transition-colors"
+                  >
+                    {language === 'ar' ? 'إدارة' : 'Manage'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-700/70">
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                    {t('noData', language)}
-                  </td>
+                  <TableHeader language={language}>{t('name', language)}</TableHeader>
+                  <TableHeader language={language}>{language === 'ar' ? 'نوع المستخدم' : 'User type'}</TableHeader>
+                  <TableHeader language={language}>{language === 'ar' ? 'الرصيد' : 'Balance'}</TableHeader>
+                  <TableHeader language={language}>{t('actions', language)}</TableHeader>
                 </tr>
-              ) : (
-                filteredWallets.map((wallet) => (
-                  <tr key={wallet.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center text-white font-semibold">
-                            {wallet.user?.firstName?.[0] || 'U'}
-                          </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                {filteredWallets.map((wallet) => (
+                  <tr key={wallet.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 text-sm font-bold text-white">
+                          {(wallet.user?.firstName?.[0] || 'U').toUpperCase()}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">
                             {wallet.user?.firstName} {wallet.user?.lastName}
-                          </div>
-                          <div className="text-sm text-gray-500">{wallet.user?.email}</div>
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{wallet.user?.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                    <td className="px-6 py-4">
+                      <span className="rounded-lg bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 capitalize">
                         {wallet.user?.userType}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-green-600">
-                        ${parseFloat(wallet.balance || 0).toFixed(2)}
-                      </div>
+                    <td className="px-6 py-4">
+                      <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        {parseFloat(wallet.balance || 0).toFixed(2)} SAR
+                      </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4">
                       <button
+                        type="button"
                         onClick={() => handleOpenModal(wallet)}
-                        className="text-orange-600 hover:text-orange-900"
+                        className="rounded-lg bg-orange-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 transition-colors"
                       >
-                        <FiPlus className="inline mr-1" />
-                        Manage
+                        {language === 'ar' ? 'إدارة' : 'Manage'}
                       </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* Modal */}
+      {/* Modal: Manage wallet */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={`Manage Wallet - ${selectedWallet?.user?.firstName} ${selectedWallet?.user?.lastName}`}
+        title={
+          selectedWallet
+            ? (language === 'ar' ? 'إدارة المحفظة — ' : 'Manage wallet — ') +
+              `${selectedWallet.user?.firstName || ''} ${selectedWallet.user?.lastName || ''}`.trim()
+            : (language === 'ar' ? 'إدارة المحفظة' : 'Manage wallet')
+        }
+        size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Current Balance</label>
-            <div className="text-2xl font-bold text-green-600">
-              ${parseFloat(selectedWallet?.balance || 0).toFixed(2)}
+        {selectedWallet && (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-700/50 p-4 border border-gray-200 dark:border-gray-600">
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {language === 'ar' ? 'الرصيد الحالي' : 'Current balance'}
+              </p>
+              <p className="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                {parseFloat(selectedWallet.balance || 0).toFixed(2)} SAR
+              </p>
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Transaction Type *</label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-            >
-              <option value="credit">Add Funds (Credit)</option>
-              <option value="debit">Deduct Funds (Debit)</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Amount *</label>
-            <input
-              type="number"
-              step="0.01"
-              name="amount"
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              required
-              min="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows="3"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-          <div className="flex justify-end space-x-3 mt-6">
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              {t('cancel', language)}
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-            >
-              {t('save', language)}
-            </button>
-          </div>
-        </form>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                {language === 'ar' ? 'نوع العملية' : 'Transaction type'}
+              </label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-orange-500"
+              >
+                <option value="credit">{language === 'ar' ? 'إضافة رصيد' : 'Add funds (Credit)'}</option>
+                <option value="debit">{language === 'ar' ? 'خصم رصيد' : 'Deduct funds (Debit)'}</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                {t('amount', language)} *
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                required
+                min="0.01"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                {t('description', language)}
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium"
+              >
+                {t('cancel', language)}
+              </button>
+              <button type="submit" className="px-5 py-2.5 bg-orange-600 text-white rounded-xl hover:bg-orange-700 font-medium">
+                {t('save', language)}
+              </button>
+            </div>
+          </form>
+        )}
       </Modal>
     </div>
   )
 }
 
 export default Wallets
-
-
-
-

@@ -358,11 +358,11 @@ const Dashboard = () => {
                       ride.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30' :
                       'bg-red-100 dark:bg-red-900/30'
                     }`}>
-                      <FiNavigation className={
+                      <FiNavigation className={`${
                         ride.status === 'completed' ? 'text-green-600 dark:text-green-400' :
                         ride.status === 'pending' ? 'text-yellow-600 dark:text-yellow-400' :
                         'text-red-600 dark:text-red-400'
-                      } size={18} className="sm:w-5 sm:h-5" />
+                      } sm:w-5 sm:h-5`} size={18} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -432,7 +432,7 @@ const Dashboard = () => {
                 >
                   <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0 bg-orange-100 dark:bg-orange-900/30">
-                      <FiCalendar className="text-orange-600 dark:text-orange-400" size={18} className="sm:w-5 sm:h-5" />
+                    <FiCalendar className="text-orange-600 dark:text-orange-400 sm:w-5 sm:h-5" size={18} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center space-x-2 mb-1">

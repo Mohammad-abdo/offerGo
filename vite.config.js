@@ -8,7 +8,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://qeema-track.developteam.site',
+        // target: 'https://qeema-track.developteam.site',
+        target: 'http://localhost:5001',
         changeOrigin: true
       }
     }

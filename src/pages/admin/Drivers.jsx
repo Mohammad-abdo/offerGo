@@ -7,10 +7,20 @@ import BulkActions from '../../components/BulkActions'
 import SearchInput from '../../components/SearchInput'
 import FilterSelect from '../../components/FilterSelect'
 import TableHeader from '../../components/TableHeader'
+import ResponsiveTable from '../../components/ResponsiveTable'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
 import { showSuccess, showError } from '../../utils/toast'
-import { FiPlus } from 'react-icons/fi'
+import {
+  FiPlus,
+  FiTruck,
+  FiCheckCircle,
+  FiClock,
+  FiXCircle,
+  FiGrid,
+  FiList,
+  FiSearch,
+} from 'react-icons/fi'
 
 const Drivers = () => {
   const { language } = useLanguage()
@@ -29,6 +39,7 @@ const Drivers = () => {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('cards')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
   const [selectedDrivers, setSelectedDrivers] = useState([])
 
@@ -170,24 +181,49 @@ const Drivers = () => {
     return matchesSearch && matchesStatus
   })
 
+  const totalCount = drivers.length
+  const activeCount = drivers.filter((d) => d.status === 'active').length
+  const pendingCount = drivers.filter((d) => d.status === 'pending').length
+  const inactiveCount = drivers.filter((d) => d.status === 'inactive').length
+  const statCards = [
+    { label: language === 'ar' ? 'إجمالي السائقين' : 'Total drivers', value: totalCount, icon: FiTruck, bgLight: 'bg-slate-50 dark:bg-slate-900/30', iconColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-700' },
+    { label: t('active', language), value: activeCount, icon: FiCheckCircle, bgLight: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', borderColor: 'border-emerald-200 dark:border-emerald-800' },
+    { label: t('pending', language), value: pendingCount, icon: FiClock, bgLight: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400', borderColor: 'border-amber-200 dark:border-amber-800' },
+    { label: t('inactive', language), value: inactiveCount, icon: FiXCircle, bgLight: 'bg-red-50 dark:bg-red-900/20', iconColor: 'text-red-600 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-800' },
+  ]
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('drivers', language)}</h1>
-          <p className="text-gray-600 mt-1">{t('manageAndMonitorAllDrivers', language)}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{t('drivers', language)}</h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">{t('manageAndMonitorAllDrivers', language)}</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 text-white px-5 py-2.5 text-sm font-semibold shadow-lg hover:from-orange-700 hover:to-orange-800 transition-all duration-200 transform hover:-translate-y-0.5"
         >
-          <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={20} />
+          <FiPlus size={18} />
           {t('addDriver', language)}
         </button>
       </div>
 
-      {/* Bulk Actions */}
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{stat.label}</span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <BulkActions
         selectedItems={selectedDrivers}
         onBulkDelete={handleBulkDelete}
@@ -199,144 +235,137 @@ const Drivers = () => {
         exportEndpoint="/users/export?userType=driver"
       />
 
-      {/* Search and Filter Bar */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('search', language) + '...'}
-            language={language}
-          />
-          <FilterSelect
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            language={language}
-          >
-            <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
-            <option value="active">{t('active', language)}</option>
-            <option value="pending">{t('pending', language)}</option>
-            <option value="inactive">{t('inactive', language)}</option>
-          </FilterSelect>
+      {/* Search, Filter + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('search', language) + '...'} language={language} />
+            </div>
+            <FilterSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} language={language}>
+              <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
+              <option value="active">{t('active', language)}</option>
+              <option value="pending">{t('pending', language)}</option>
+              <option value="inactive">{t('inactive', language)}</option>
+            </FilterSelect>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button type="button" onClick={() => setViewMode('cards')} className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'بطاقات' : 'Cards'}><FiGrid size={20} /></button>
+            <button type="button" onClick={() => setViewMode('table')} className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'جدول' : 'Table'}><FiList size={20} /></button>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      {/* Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        {filteredDrivers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiSearch className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">{t('noData', language)}</h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">{searchTerm ? (t('tryAdjustingYourSearch', language) || 'Try adjusting your search or filters.') : (language === 'ar' ? 'لا يوجد سائقون حتى الآن.' : 'No drivers yet.')}</p>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredDrivers.map((driver) => (
+              <div key={driver.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 gap-3">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-green-400 to-green-600 text-lg font-bold text-white">
+                      {(driver.firstName?.[0] || '').toUpperCase()}{(driver.lastName?.[0] || '').toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">{driver.firstName || ''} {driver.lastName || ''}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{driver.email || '-'}</p>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 px-2.5 py-1 text-xs font-semibold rounded-full border ${driver.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : driver.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-700'}`}>
+                    {t(driver.status || 'pending', language) || driver.status}
+                  </span>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${driver.isOnline ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>
+                    {driver.isOnline ? t('online', language) : t('offline', language)}
+                  </span>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${driver.isAvailable ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>
+                    {driver.isAvailable ? t('available', language) : t('busy', language)}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center justify-end gap-1 border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <ActionButtons onEdit={() => handleOpenModal(driver)} onDelete={() => handleDelete(driver.id)} size="sm" forceShowIcons />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+        <ResponsiveTable>
+          <thead className="bg-gray-50 dark:bg-gray-700/50">
             <tr>
-              <TableHeader>
+              <TableHeader language={language}>
                 <input
                   type="checkbox"
                   checked={selectedDrivers.length === filteredDrivers.length && filteredDrivers.length > 0}
                   onChange={handleSelectAll}
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-gray-300 dark:border-gray-600 text-orange-600 focus:ring-orange-500 bg-white dark:bg-gray-800"
                 />
               </TableHeader>
-              <TableHeader>{t('name', language)}</TableHeader>
-              <TableHeader>{t('email', language)}</TableHeader>
-              <TableHeader>{t('contactNumber', language)}</TableHeader>
-              <TableHeader>{t('status', language)}</TableHeader>
-              <TableHeader>{t('online', language)}</TableHeader>
-              <TableHeader>{t('available', language)}</TableHeader>
-              <TableHeader>{t('actions', language)}</TableHeader>
+              <TableHeader language={language}>{t('name', language)}</TableHeader>
+              <TableHeader language={language}>{t('email', language)}</TableHeader>
+              <TableHeader language={language}>{t('contactNumber', language)}</TableHeader>
+              <TableHeader language={language}>{t('status', language)}</TableHeader>
+              <TableHeader language={language}>{t('online', language)}</TableHeader>
+              <TableHeader language={language}>{t('available', language)}</TableHeader>
+              <TableHeader language={language}>{t('actions', language)}</TableHeader>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredDrivers.length === 0 ? (
-              <tr>
-                <td colSpan="8" className="px-6 py-12 text-center">
-                  <div className="flex flex-col items-center">
-                    <div className="text-gray-400 mb-2">
-                      <FiSearch size={48} />
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {filteredDrivers.map((driver) => (
+              <tr key={driver.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <input
+                    type="checkbox"
+                    checked={selectedDrivers.includes(driver.id)}
+                    onChange={() => handleSelectDriver(driver.id)}
+                    className="rounded border-gray-300 dark:border-gray-600 text-orange-600 focus:ring-orange-500 bg-white dark:bg-gray-800"
+                  />
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-semibold text-sm mr-3">
+                      {(driver.firstName?.[0] || '').toUpperCase()}{(driver.lastName?.[0] || '').toUpperCase()}
                     </div>
-                    <p className="text-gray-500 font-medium">{t('noData', language)}</p>
-                    {searchTerm && (
-                      <p className="text-gray-400 text-sm mt-1">{t('tryAdjustingYourSearch', language) || 'Try adjusting your search or filters'}</p>
-                    )}
+                    <div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">{driver.firstName || ''} {driver.lastName || ''}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('id', language)}: {driver.id}</div>
+                    </div>
                   </div>
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{driver.email || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{driver.contactNumber || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${driver.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : driver.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-700'}`}>
+                    {t(driver.status || 'pending', language) || driver.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${driver.isOnline ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>
+                    {driver.isOnline ? t('online', language) : t('offline', language)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${driver.isAvailable ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>
+                    {driver.isAvailable ? t('available', language) : t('busy', language)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <ActionButtons onEdit={() => handleOpenModal(driver)} onDelete={() => handleDelete(driver.id)} forceShowIcons />
+                </td>
               </tr>
-            ) : (
-              filteredDrivers.map((driver) => (
-                <tr key={driver.id} className="hover:bg-gradient-to-r hover:from-orange-50/50 hover:to-transparent transition-colors duration-150">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <input
-                      type="checkbox"
-                      checked={selectedDrivers.includes(driver.id)}
-                      onChange={() => handleSelectDriver(driver.id)}
-                      className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-semibold text-sm mr-3">
-                        {(driver.firstName?.[0] || '').toUpperCase()}{(driver.lastName?.[0] || '').toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900">
-                          {driver.firstName || ''} {driver.lastName || ''}
-                        </div>
-                        <div className="text-xs text-gray-500">{t('id', language)}: {driver.id}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{driver.email || '-'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600">{driver.contactNumber || '-'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${
-                        driver.status === 'active'
-                          ? 'bg-green-100 text-green-800 border-green-200'
-                          : driver.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
-                          : 'bg-red-100 text-red-800 border-red-200'
-                      }`}
-                    >
-                      {(() => {
-                        const status = driver.status || 'pending'
-                        return t(status, language) || status
-                      })()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${
-                        driver.isOnline
-                          ? 'bg-green-100 text-green-800 border-green-200'
-                          : 'bg-gray-100 text-gray-800 border-gray-200'
-                      }`}
-                    >
-                      {driver.isOnline ? t('online', language) : t('offline', language)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${
-                        driver.isAvailable
-                          ? 'bg-orange-100 text-orange-800 border-orange-200'
-                          : 'bg-gray-100 text-gray-800 border-gray-200'
-                      }`}
-                    >
-                      {driver.isAvailable ? t('available', language) : t('busy', language)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <ActionButtons
-                      onEdit={() => handleOpenModal(driver)}
-                      onDelete={() => handleDelete(driver.id)}
-                    />
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
-        </table>
+        </ResponsiveTable>
+        )}
       </div>
 
       {/* Modal */}
@@ -349,90 +378,90 @@ const Drivers = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('firstName', language)}</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('firstName', language)}</label>
               <input
                 type="text"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('lastName', language)}</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('lastName', language)}</label>
               <input
                 type="text"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('email', language)}</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('email', language)}</label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('contactNumber', language)}</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('contactNumber', language)}</label>
             <input
               type="tel"
               value={formData.contactNumber}
               onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           {!editingDriver && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('password', language)}</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('password', language)}</label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required={!editingDriver}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           )}
 
           {editingDriver && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('password', language)} ({t('optional', language)})</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('password', language)} ({t('optional', language)})</label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('address', language)}</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('address', language)}</label>
             <textarea
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows="3"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('status', language)}</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('status', language)}</label>
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="active">{t('active', language)}</option>
               <option value="pending">{t('pending', language)}</option>
@@ -440,17 +469,17 @@ const Drivers = () => {
             </select>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-all duration-200"
             >
               {t('cancel', language)}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {editingDriver ? t('update', language) : t('create', language)}
             </button>

@@ -9,7 +9,16 @@ import TableHeader from '../../components/TableHeader'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
 import { showSuccess, showError } from '../../utils/toast'
-import { FiPlus, FiRefreshCw, FiXCircle } from 'react-icons/fi'
+import {
+  FiPlus,
+  FiRefreshCw,
+  FiXCircle,
+  FiList,
+  FiGrid,
+  FiFileText,
+  FiCheckCircle,
+  FiAlertCircle,
+} from 'react-icons/fi'
 
 const Cancellations = () => {
   const { language } = useLanguage()
@@ -25,6 +34,7 @@ const Cancellations = () => {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('cards')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
 
   useEffect(() => {
@@ -125,55 +135,110 @@ const Cancellations = () => {
     return matchesSearch && matchesType
   })
 
+  const totalCount = list.length
+  const riderReasons = list.filter((i) => i.type === 'rider').length
+  const driverReasons = list.filter((i) => i.type === 'driver').length
+  const activeCount = list.filter((i) => i.status === 1).length
+  const statCards = [
+    { label: language === 'ar' ? 'إجمالي الأسباب' : 'Total reasons', value: totalCount, icon: FiFileText, bgLight: 'bg-slate-50 dark:bg-slate-900/30', iconColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-700' },
+    { label: t('reasonForRider', language), value: riderReasons, icon: FiCheckCircle, bgLight: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+    { label: t('reasonForDriver', language), value: driverReasons, icon: FiAlertCircle, bgLight: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400', borderColor: 'border-amber-200 dark:border-amber-800' },
+    { label: t('active', language), value: activeCount, icon: FiCheckCircle, bgLight: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', borderColor: 'border-emerald-200 dark:border-emerald-800' },
+  ]
+
   const inputClass =
     'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent'
   const labelClass = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('cancellations', language)}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{t('manageCancellations', language)}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{t('cancellations', language)}</h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">{t('manageCancellations', language)}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => fetchCancellations()}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <FiRefreshCw className={language === 'ar' ? 'ml-2' : 'mr-2'} size={18} />
+          <button onClick={() => fetchCancellations()} className="inline-flex items-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <FiRefreshCw size={18} />
             {t('refresh', language)}
           </button>
-          <button
-            onClick={() => handleOpenModal()}
-            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={20} />
+          <button onClick={() => handleOpenModal()} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 text-white px-5 py-2.5 text-sm font-semibold shadow-lg hover:from-orange-700 hover:to-orange-800 transition-all duration-200 transform hover:-translate-y-0.5">
+            <FiPlus size={18} />
             {t('addCancellationReason', language)}
           </button>
         </div>
       </div>
 
-      {/* Search and Filter */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('search', language) + '...'}
-            language={language}
-          />
-          <FilterSelect value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} language={language}>
-            <option value="all">{t('type', language)}: {t('viewAll', language)}</option>
-            <option value="rider">{t('reasonForRider', language)}</option>
-            <option value="driver">{t('reasonForDriver', language)}</option>
-          </FilterSelect>
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{stat.label}</span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Search, Filter + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('search', language) + '...'} language={language} />
+            </div>
+            <FilterSelect value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} language={language}>
+              <option value="all">{t('type', language)}: {t('viewAll', language)}</option>
+              <option value="rider">{t('reasonForRider', language)}</option>
+              <option value="driver">{t('reasonForDriver', language)}</option>
+            </FilterSelect>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button type="button" onClick={() => setViewMode('cards')} className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'بطاقات' : 'Cards'}><FiGrid size={20} /></button>
+            <button type="button" onClick={() => setViewMode('table')} className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'جدول' : 'Table'}><FiList size={20} /></button>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      {/* Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        {filteredList.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiXCircle className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">{t('noCancellationsFound', language)}</h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">{searchTerm ? t('tryAdjustingYourSearch', language) : (language === 'ar' ? 'لا توجد أسباب إلغاء حتى الآن.' : 'No cancellation reasons yet.')}</p>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredList.map((item) => (
+              <div key={item.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-gray-900 dark:text-white truncate">{item.name || '—'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate" dir="rtl">{item.nameAr || '—'}</p>
+                  </div>
+                  <span className={`shrink-0 px-2.5 py-1 text-xs font-semibold rounded-full border ${item.type === 'rider' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-700' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-700'}`}>
+                    {item.type === 'rider' ? t('reasonForRider', language) : t('reasonForDriver', language)}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${item.status === 1 ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>
+                    {item.status === 1 ? t('active', language) : t('inactive', language)}
+                  </span>
+                  <ActionButtons onEdit={() => handleOpenModal(item)} onDelete={() => handleDelete(item.id)} showView={false} showEdit={true} showDelete={true} forceShowIcons={true} size="sm" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+        <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700/50">
             <tr>
@@ -247,7 +312,14 @@ const Cancellations = () => {
             )}
           </tbody>
         </table>
+        </div>
+        )}
       </div>
+      {loading && (
+        <div className="flex items-center justify-center py-20 px-6">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        </div>
+      )}
 
       {/* Add/Edit Modal */}
       <Modal

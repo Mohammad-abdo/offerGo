@@ -237,32 +237,63 @@ const Riders = () => {
         exportEndpoint="/users/export?userType=rider"
       />
 
-      {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('search', language) + '...'}
-            language={language}
-            className="w-full sm:flex-1"
-          />
-          <FilterSelect
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            language={language}
-            className="w-full sm:w-auto sm:min-w-[180px]"
-          >
-            <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
-            <option value="active">{t('active', language)}</option>
-            <option value="pending">{t('pending', language)}</option>
-            <option value="inactive">{t('inactive', language)}</option>
-          </FilterSelect>
+      {/* Search, Filter + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('search', language) + '...'} language={language} className="w-full" />
+            </div>
+            <FilterSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} language={language} className="w-full sm:w-auto sm:min-w-[180px]">
+              <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
+              <option value="active">{t('active', language)}</option>
+              <option value="pending">{t('pending', language)}</option>
+              <option value="inactive">{t('inactive', language)}</option>
+            </FilterSelect>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button type="button" onClick={() => setViewMode('cards')} className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'بطاقات' : 'Cards'}><FiGrid size={20} /></button>
+            <button type="button" onClick={() => setViewMode('table')} className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'جدول' : 'Table'}><FiList size={20} /></button>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      {/* Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        {filteredRiders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiSearch className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">{t('noData', language)}</h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">{searchTerm ? (t('tryAdjustingYourSearch', language) || 'Try adjusting your search or filters.') : (language === 'ar' ? 'لا يوجد ركاب حتى الآن.' : 'No riders yet.')}</p>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredRiders.map((rider) => (
+              <div key={rider.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 gap-3">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-lg font-bold text-white">
+                      {(rider.firstName?.[0] || '').toUpperCase()}{(rider.lastName?.[0] || '').toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">{rider.firstName || ''} {rider.lastName || ''}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{rider.email || '-'}</p>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 px-2.5 py-1 text-xs font-semibold rounded-full border ${rider.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : rider.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-700'}`}>
+                    {t(rider.status || 'pending', language) || rider.status}
+                  </span>
+                </div>
+                <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">{rider.contactNumber || '-'}</div>
+                <div className="mt-4 flex items-center justify-end gap-1 border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <ActionButtons onEdit={() => handleOpenModal(rider)} onDelete={() => handleDelete(rider.id)} size="sm" forceShowIcons />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <ResponsiveTable>
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
@@ -360,6 +391,7 @@ const Riders = () => {
             )}
           </tbody>
         </ResponsiveTable>
+        )}
       </div>
 
       {/* Modal */}

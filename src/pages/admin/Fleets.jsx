@@ -9,7 +9,17 @@ import TableHeader from '../../components/TableHeader'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
 import { showSuccess, showError } from '../../utils/toast'
-import { FiPlus, FiRefreshCw, FiTruck } from 'react-icons/fi'
+import {
+  FiPlus,
+  FiRefreshCw,
+  FiTruck,
+  FiCheckCircle,
+  FiClock,
+  FiXCircle,
+  FiGrid,
+  FiList,
+  FiUsers,
+} from 'react-icons/fi'
 
 const Fleets = () => {
   const { language } = useLanguage()
@@ -30,6 +40,7 @@ const Fleets = () => {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('cards')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
 
   useEffect(() => {
@@ -155,56 +166,171 @@ const Fleets = () => {
     return matchesSearch && matchesStatus
   })
 
+  const totalCount = fleets.length
+  const activeCount = fleets.filter((f) => f.status === 'active').length
+  const pendingCount = fleets.filter((f) => f.status === 'pending').length
+  const inactiveCount = fleets.filter((f) => f.status === 'inactive').length
+  const statCards = [
+    { label: language === 'ar' ? 'إجمالي الأساطيل' : 'Total fleets', value: totalCount, icon: FiTruck, bgLight: 'bg-slate-50 dark:bg-slate-900/30', iconColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-700' },
+    { label: t('active', language), value: activeCount, icon: FiCheckCircle, bgLight: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', borderColor: 'border-emerald-200 dark:border-emerald-800' },
+    { label: t('pending', language), value: pendingCount, icon: FiClock, bgLight: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400', borderColor: 'border-amber-200 dark:border-amber-800' },
+    { label: t('inactive', language), value: inactiveCount, icon: FiXCircle, bgLight: 'bg-red-50 dark:bg-red-900/20', iconColor: 'text-red-600 dark:text-red-400', borderColor: 'border-red-200 dark:border-red-800' },
+  ]
+
+  const fleetTableRows = filteredFleets.map((fleet) => (
+    <tr
+      key={fleet.id}
+      className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150"
+    >
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center">
+          <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold text-sm mr-3">
+            {(fleet.firstName?.[0] || 'F').toUpperCase()}
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-gray-900 dark:text-white">
+              {fleet.firstName || ''} {fleet.lastName || ''}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {fleet.displayName || t('individualFleet', language)}
+            </div>
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex flex-col gap-0.5">
+          <div className="text-sm text-gray-900 dark:text-gray-200">{fleet.email || '-'}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">{fleet.contactNumber || '-'}</div>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-700">
+          {fleet.drivers?.length || 0} {t('driversCount', language)}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span
+          className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${
+            fleet.status === 'active'
+              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700'
+              : fleet.status === 'pending'
+              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700'
+              : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-700'
+          }`}
+        >
+          {t(fleet.status || 'pending', language) || fleet.status}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <ActionButtons
+          onView={() => handleViewDetails(fleet)}
+          onEdit={() => handleOpenModal(fleet)}
+          onDelete={() => handleDelete(fleet.id)}
+          showView={true}
+          showEdit={true}
+          showDelete={true}
+          forceShowIcons={true}
+        />
+      </td>
+    </tr>
+  ))
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('fleets', language)}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{t('manageAndMonitorAllFleets', language)}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{t('fleets', language)}</h1>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">{t('manageAndMonitorAllFleets', language)}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => fetchFleets()}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            <FiRefreshCw className={language === 'ar' ? 'ml-2' : 'mr-2'} size={18} />
+          <button onClick={() => fetchFleets()} className="inline-flex items-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <FiRefreshCw size={18} />
             {t('refresh', language)}
           </button>
-          <button
-            onClick={() => handleOpenModal()}
-            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
-          >
-            <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={20} />
+          <button onClick={() => handleOpenModal()} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 text-white px-5 py-2.5 text-sm font-semibold shadow-lg hover:from-orange-700 hover:to-orange-800 transition-all duration-200 transform hover:-translate-y-0.5">
+            <FiPlus size={18} />
             {t('addFleet', language)}
           </button>
         </div>
       </div>
 
-      {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('search', language) + '...'}
-            language={language}
-          />
-          <FilterSelect
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            language={language}
-          >
-            <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
-            <option value="active">{t('active', language)}</option>
-            <option value="pending">{t('pending', language)}</option>
-            <option value="inactive">{t('inactive', language)}</option>
-          </FilterSelect>
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{stat.label}</span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Search, Filter + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('search', language) + '...'} language={language} />
+            </div>
+            <FilterSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} language={language}>
+              <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
+              <option value="active">{t('active', language)}</option>
+              <option value="pending">{t('pending', language)}</option>
+              <option value="inactive">{t('inactive', language)}</option>
+            </FilterSelect>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button type="button" onClick={() => setViewMode('cards')} className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'بطاقات' : 'Cards'}><FiGrid size={20} /></button>
+            <button type="button" onClick={() => setViewMode('table')} className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'جدول' : 'Table'}><FiList size={20} /></button>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      {/* Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        {filteredFleets.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiTruck className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">{t('noFleetsFound', language)}</h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">{searchTerm ? t('tryAdjustingYourSearch', language) : (language === 'ar' ? 'لا توجد أساطيل حتى الآن.' : 'No fleets yet.')}</p>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredFleets.map((fleet) => (
+              <div key={fleet.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 gap-3">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 text-lg font-bold text-white">
+                      {(fleet.firstName?.[0] || 'F').toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">{fleet.firstName || ''} {fleet.lastName || ''}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{fleet.displayName || t('individualFleet', language)}</p>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 px-2.5 py-1 text-xs font-semibold rounded-full border ${fleet.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : fleet.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-700'}`}>
+                    {t(fleet.status || 'pending', language) || fleet.status}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <FiUsers size={16} className="shrink-0" />
+                  <span>{fleet.drivers?.length || 0} {t('driversCount', language)}</span>
+                </div>
+                <div className="mt-4 flex items-center justify-end gap-1 border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <ActionButtons onView={() => handleViewDetails(fleet)} onEdit={() => handleOpenModal(fleet)} onDelete={() => handleDelete(fleet.id)} showView={true} showEdit={true} showDelete={true} forceShowIcons={true} />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+        <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700/50">
             <tr>
@@ -216,81 +342,11 @@ const Fleets = () => {
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {filteredFleets.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="px-6 py-12 text-center">
-                  <div className="flex flex-col items-center">
-                    <FiTruck className="text-gray-400 dark:text-gray-500 mb-2" size={48} />
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">{t('noFleetsFound', language)}</p>
-                    {searchTerm && (
-                      <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
-                        {t('tryAdjustingYourSearch', language)}
-                      </p>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredFleets.map((fleet) => (
-                <tr
-                  key={fleet.id}
-                  className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold text-sm mr-3">
-                        {(fleet.firstName?.[0] || 'F').toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {fleet.firstName || ''} {fleet.lastName || ''}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {fleet.displayName || t('individualFleet', language)}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-col gap-0.5">
-                      <div className="text-sm text-gray-900 dark:text-gray-200">{fleet.email || '-'}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{fleet.contactNumber || '-'}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-700">
-                      {fleet.drivers?.length || 0} {t('driversCount', language)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${
-                        fleet.status === 'active'
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700'
-                          : fleet.status === 'pending'
-                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700'
-                          : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-700'
-                      }`}
-                    >
-                      {t(fleet.status || 'pending', language) || fleet.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <ActionButtons
-                      onView={() => handleViewDetails(fleet)}
-                      onEdit={() => handleOpenModal(fleet)}
-                      onDelete={() => handleDelete(fleet.id)}
-                      showView={true}
-                      showEdit={true}
-                      showDelete={true}
-                      forceShowIcons={true}
-                    />
-                  </td>
-                </tr>
-              ))
-            )}
+              {fleetTableRows}
           </tbody>
         </table>
+        </div>
+        )}
       </div>
 
       {/* Add/Edit Modal */}

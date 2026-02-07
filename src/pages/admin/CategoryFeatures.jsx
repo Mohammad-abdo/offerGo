@@ -9,7 +9,15 @@ import TableHeader from '../../components/TableHeader'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { t } from '../../utils/translations'
 import { showSuccess, showError } from '../../utils/toast'
-import { FiPlus, FiStar } from 'react-icons/fi'
+import {
+  FiPlus,
+  FiRefreshCw,
+  FiList,
+  FiGrid,
+  FiStar,
+  FiCheckCircle,
+  FiXCircle,
+} from 'react-icons/fi'
 
 const CategoryFeatures = () => {
   const { language } = useLanguage()
@@ -27,6 +35,7 @@ const CategoryFeatures = () => {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('cards')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, onConfirm: null, message: '' })
 
   useEffect(() => {
@@ -146,139 +155,160 @@ const CategoryFeatures = () => {
     return matchesSearch && matchesStatus
   })
 
+  const totalCount = features.length
+  const activeCount = features.filter((f) => f.status === 1 || f.status === '1').length
+  const inactiveCount = features.filter((f) => f.status === 0 || f.status === '0').length
+  const statCards = [
+    { label: language === 'ar' ? 'إجمالي المميزات' : 'Total features', value: totalCount, icon: FiStar, bgLight: 'bg-slate-50 dark:bg-slate-900/30', iconColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-200 dark:border-slate-700' },
+    { label: t('active', language), value: activeCount, icon: FiCheckCircle, bgLight: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400', borderColor: 'border-emerald-200 dark:border-emerald-800' },
+    { label: t('inactive', language), value: inactiveCount, icon: FiXCircle, bgLight: 'bg-gray-50 dark:bg-gray-900/30', iconColor: 'text-gray-600 dark:text-gray-400', borderColor: 'border-gray-200 dark:border-gray-700' },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8 pb-12 animate-fade-in">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
             {t('categoryFeatures', language)}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400 max-w-2xl">
             {t('manageCategoryFeatures', language)}
           </p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
-        >
-          <FiPlus className={language === 'ar' ? 'ml-2' : 'mr-2'} size={20} />
-          {t('addFeature', language)}
-        </button>
-      </div>
-
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 text-sm text-blue-800 dark:text-blue-200">
-        {t('categoryFeaturesInfo', language)}
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('search', language) + '...'}
-            language={language}
-          />
-          <FilterSelect
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            language={language}
-          >
-            <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
-            <option value="active">{t('active', language)}</option>
-            <option value="inactive">{t('inactive', language)}</option>
-          </FilterSelect>
+        <div className="flex items-center gap-2">
+          <button onClick={() => { fetchVehicleCategories(); fetchFeatures(); }} className="inline-flex items-center gap-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <FiRefreshCw size={18} />
+            {t('refresh', language)}
+          </button>
+          <button onClick={() => handleOpenModal()} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 text-white px-5 py-2.5 text-sm font-semibold shadow-lg hover:from-orange-700 hover:to-orange-800 transition-all duration-200 transform hover:-translate-y-0.5">
+            <FiPlus size={18} />
+            {t('addFeature', language)}
+          </button>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700/50">
-            <tr>
-              <TableHeader language={language}>ID</TableHeader>
-              <TableHeader language={language}>{t('name', language)}</TableHeader>
-              <TableHeader language={language}>{t('vehicleCategory', language)}</TableHeader>
-              <TableHeader language={language}>{t('status', language)}</TableHeader>
-              <TableHeader language={language}>{t('actions', language)}</TableHeader>
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {filteredFeatures.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="px-6 py-12 text-center">
-                  <div className="flex flex-col items-center">
-                    <FiStar className="text-gray-400 dark:text-gray-500 mb-2" size={48} />
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
-                      {t('noCategoryFeaturesFound', language)}
-                    </p>
-                    {searchTerm && (
-                      <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
-                        {t('tryAdjustingYourSearch', language)}
-                      </p>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredFeatures.map((feature) => (
-                <tr
-                  key={feature.id}
-                  className="hover:bg-gradient-to-r hover:from-orange-50/50 dark:hover:from-orange-900/10 hover:to-transparent transition-colors duration-150"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {feature.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      {feature.icon && (
-                        <span className="text-xl" role="img" aria-hidden>{feature.icon}</span>
-                      )}
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {language === 'ar' ? (feature.nameAr || feature.name) : (feature.name || feature.nameAr)}
-                        </div>
-                        {feature.nameAr && feature.name && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            {language === 'ar' ? feature.name : feature.nameAr}
-                          </div>
-                        )}
-                      </div>
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {statCards.map((stat) => (
+          <div key={stat.label} className={`rounded-2xl border ${stat.borderColor} overflow-hidden shadow-sm ${stat.bgLight}`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{stat.label}</span>
+                <stat.icon className={stat.iconColor} size={28} />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Info box */}
+      <div className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 px-5 py-4 text-sm text-blue-800 dark:text-blue-200">
+        {t('categoryFeaturesInfo', language)}
+      </div>
+
+      {/* Search, Filter + view toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={t('search', language) + '...'} language={language} />
+            </div>
+            <FilterSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} language={language}>
+              <option value="all">{t('status', language)}: {t('viewAll', language)}</option>
+              <option value="active">{t('active', language)}</option>
+              <option value="inactive">{t('inactive', language)}</option>
+            </FilterSelect>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700/50">
+            <button type="button" onClick={() => setViewMode('cards')} className={`rounded-md p-2 transition-colors ${viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'بطاقات' : 'Cards'}><FiGrid size={20} /></button>
+            <button type="button" onClick={() => setViewMode('table')} className={`rounded-md p-2 transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`} title={language === 'ar' ? 'جدول' : 'Table'}><FiList size={20} /></button>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards or Table */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+        {filteredFeatures.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 px-6">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
+              <FiStar className="text-orange-500 dark:text-orange-400" size={48} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center">{t('noCategoryFeaturesFound', language)}</h3>
+            <p className="mt-2 text-center text-gray-500 dark:text-gray-400 max-w-md">{searchTerm ? t('tryAdjustingYourSearch', language) : (language === 'ar' ? 'لا توجد مميزات فئات حتى الآن.' : 'No category features yet.')}</p>
+          </div>
+        ) : viewMode === 'cards' ? (
+          <div className="p-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredFeatures.map((feature) => (
+              <div key={feature.id} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    {feature.icon && <span className="text-2xl shrink-0" role="img" aria-hidden>{feature.icon}</span>}
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">{language === 'ar' ? (feature.nameAr || feature.name) : (feature.name || feature.nameAr)}</p>
+                      {feature.nameAr && feature.name && <p className="text-sm text-gray-500 dark:text-gray-400 truncate" dir="rtl">{language === 'ar' ? feature.name : feature.nameAr}</p>}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-0.5 text-xs font-medium rounded bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700">
-                      {language === 'ar'
-                        ? (feature.vehicleCategory?.nameAr || feature.vehicleCategory?.name || '—')
-                        : (feature.vehicleCategory?.name || feature.vehicleCategory?.nameAr || '—')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${
-                        feature.status === 1 || feature.status === '1'
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600'
-                      }`}
-                    >
-                      {feature.status === 1 || feature.status === '1'
-                        ? t('active', language)
-                        : t('inactive', language)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <ActionButtons
-                      onEdit={() => handleOpenModal(feature)}
-                      onDelete={() => handleDelete(feature.id)}
-                      showView={false}
-                      showEdit={true}
-                      showDelete={true}
-                      forceShowIcons={true}
-                    />
-                  </td>
+                  </div>
+                  <span className={`shrink-0 px-2.5 py-1 text-xs font-semibold rounded-full border ${feature.status === 1 || feature.status === '1' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'}`}>
+                    {feature.status === 1 || feature.status === '1' ? t('active', language) : t('inactive', language)}
+                  </span>
+                </div>
+                <div className="mt-3">
+                  <span className="px-2 py-0.5 text-xs font-medium rounded bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700">
+                    {language === 'ar' ? (feature.vehicleCategory?.nameAr || feature.vehicleCategory?.name || '—') : (feature.vehicleCategory?.name || feature.vehicleCategory?.nameAr || '—')}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center justify-end border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <ActionButtons onEdit={() => handleOpenModal(feature)} onDelete={() => handleDelete(feature.id)} showView={false} showEdit={true} showDelete={true} forceShowIcons={true} size="sm" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700/50">
+                <tr>
+                  <TableHeader language={language}>ID</TableHeader>
+                  <TableHeader language={language}>{t('name', language)}</TableHeader>
+                  <TableHeader language={language}>{t('vehicleCategory', language)}</TableHeader>
+                  <TableHeader language={language}>{t('status', language)}</TableHeader>
+                  <TableHeader language={language}>{t('actions', language)}</TableHeader>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredFeatures.map((feature) => (
+                  <tr key={feature.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{feature.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        {feature.icon && <span className="text-xl" role="img" aria-hidden>{feature.icon}</span>}
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{language === 'ar' ? (feature.nameAr || feature.name) : (feature.name || feature.nameAr)}</div>
+                          {feature.nameAr && feature.name && <div className="text-xs text-gray-500 dark:text-gray-400">{language === 'ar' ? feature.name : feature.nameAr}</div>}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-0.5 text-xs font-medium rounded bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700">
+                        {language === 'ar' ? (feature.vehicleCategory?.nameAr || feature.vehicleCategory?.name || '—') : (feature.vehicleCategory?.name || feature.vehicleCategory?.nameAr || '—')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full border ${feature.status === 1 || feature.status === '1' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600'}`}>
+                        {feature.status === 1 || feature.status === '1' ? t('active', language) : t('inactive', language)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ActionButtons onEdit={() => handleOpenModal(feature)} onDelete={() => handleDelete(feature.id)} showView={false} showEdit={true} showDelete={true} forceShowIcons={true} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <Modal
@@ -354,15 +384,11 @@ const CategoryFeatures = () => {
               <option value={0}>{t('inactive', language)}</option>
             </select>
           </div>
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={handleCloseModal}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
+          <div className="flex justify-end gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <button type="button" onClick={handleCloseModal} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
               {t('cancel', language)}
             </button>
-            <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">
+            <button type="submit" className="px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800">
               {editingFeature ? t('update', language) : t('create', language)}
             </button>
           </div>
